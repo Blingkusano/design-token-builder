@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>design-token-builder</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#16181D;--ink-2:#5A6270;--ink-3:#8B93A1;--rule:#E3E6EB;--accent:#0D6E6E;--accent-tint:#EAF4F4;--surface-2:#F5F6F8}
+  *{box-sizing:border-box}
+  body{font-family:'IBM Plex Sans Thai',sans-serif;max-width:720px;margin:0 auto;padding:64px 24px 96px;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+  .tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-tint);border-radius:3px;padding:4px 9px;margin-bottom:14px}
+  h1{font-size:32px;margin:0 0 10px;letter-spacing:-.01em}
+  .lede{color:var(--ink-2);margin:0 0 44px;max-width:58ch}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--rule);border-radius:8px;padding:20px 22px;margin-bottom:14px;transition:border-color .14s,background .14s}
+  a.card:hover{border-color:var(--accent);background:var(--accent-tint)}
+  a.card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .card h2{font-size:17px;margin:0 0 5px;font-weight:600}
+  .card p{margin:0;font-size:14px;color:var(--ink-2)}
+  .card .k{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:7px}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3)}
+  code{font-family:'IBM Plex Mono',monospace;background:var(--surface-2);border-radius:3px;padding:2px 6px;font-size:.9em}
+</style>
+</head>
+<body>
+
+<span class="tag">Claude Skill</span>
+<h1>design-token-builder</h1>
+<p class="lede">สร้างชุด Design Token ตามมาตรฐาน W3C DTCG พร้อม HTML preview และสร้าง Variables ลง Figma ให้อัตโนมัติ</p>
+
+<a class="card" href="instruction.html">
+  <span class="k">เริ่มที่นี่</span>
+  <h2>วิธีใช้งาน</h2>
+  <p>ขั้นตอนตั้งแต่ติดตั้ง skill ลง Claude ต่อ Figma connector เตรียมค่าสีแบรนด์ ไปจนถึงสั่งสร้างและส่งขึ้น Figma</p>
+</a>
+
+<a class="card" href="token-preview-sample.html">
+  <span class="k">ตัวอย่าง</span>
+  <h2>Token preview — sample</h2>
+  <p>ตัวอย่างหน้า preview ที่ skill สร้างให้ ใช้ค่าสมมติทั้งหมด ไม่ใช่โปรเจกต์จริง</p>
+</a>
+
+<a class="card" href="audit-report.html">
+  <span class="k">คุณภาพ</span>
+  <h2>Skill audit report</h2>
+  <p>ผลตรวจ SKILL.md ตามเกณฑ์ 12 ข้อ พร้อมผลตรวจความสอดคล้องของไฟล์ reference ทั้ง 6 ไฟล์</p>
+</a>
+
+<footer>
+  ตัว skill อยู่ในโฟลเดอร์ <code>design-token-builder/</code> ของ repo นี้ — ดาวน์โหลดทั้งโฟลเดอร์ บีบเป็น <code>.zip</code> แล้วอัปโหลดเข้า Claude ตามขั้นตอนในหน้าวิธีใช้งาน
+</footer>
+
+</body>
+</html>

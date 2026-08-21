@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>วิธีใช้งาน design-token-builder</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16181D;
+    --ink-2:#5A6270;
+    --ink-3:#8B93A1;
+    --surface:#FFFFFF;
+    --surface-2:#F5F6F8;
+    --rule:#E3E6EB;
+    --accent:#0D6E6E;
+    --accent-tint:#EAF4F4;
+    --warn-tint:#FDF6E3;
+    --warn-rule:#E8C96A;
+  }
+  *{box-sizing:border-box}
+  body{
+    font-family:'IBM Plex Sans Thai',sans-serif;
+    max-width:860px;margin:0 auto;padding:56px 24px 96px;
+    color:var(--ink);line-height:1.7;background:var(--surface);
+    -webkit-font-smoothing:antialiased;
+  }
+  code,.mono{font-family:'IBM Plex Mono',monospace}
+
+  /* --- masthead, styled like the Foundation page headers the skill builds --- */
+  .badge{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+    background:var(--accent-tint);border-radius:3px;padding:4px 9px;margin-bottom:14px;
+  }
+  h1{font-size:34px;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em}
+  .lede{color:var(--ink-2);margin:0 0 22px;max-width:60ch}
+  .meta-table{width:100%;border-collapse:collapse;margin:0 0 56px;font-size:14px}
+  .meta-table td{border-top:1px solid var(--rule);padding:9px 0;vertical-align:top}
+  .meta-table td:first-child{color:var(--ink-3);width:150px}
+  .meta-table tr:last-child td{border-bottom:1px solid var(--rule)}
+
+  /* --- group heading --- */
+  .group{margin:0 0 12px;padding-top:8px}
+  .group-num{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);
+    letter-spacing:.06em;display:block;margin-bottom:2px;
+  }
+  .group h2{font-size:23px;margin:0 0 28px;letter-spacing:-.01em}
+
+  /* --- the step rail: a hairline spine, echoing a token alias chain --- */
+  .steps{list-style:none;margin:0 0 60px;padding:0 0 0 30px;border-left:1px solid var(--rule)}
+  .step{position:relative;margin-bottom:34px}
+  .step:last-child{margin-bottom:0}
+  .step::before{
+    content:"";position:absolute;left:-34px;top:11px;
+    width:9px;height:9px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--accent);
+  }
+  .step-key{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-3);
+    display:block;margin-bottom:3px;
+  }
+  .step h3{font-size:17px;margin:0 0 8px;font-weight:600}
+  .step p{margin:0 0 10px}
+  .step ol,.step ul{margin:10px 0 0;padding-left:20px}
+  .step li{margin-bottom:7px}
+
+  /* --- name/value table, mirroring the Foundation sub-pages --- */
+  table.nv{width:100%;border-collapse:collapse;margin:14px 0 0;font-size:14px}
+  table.nv th{
+    text-align:left;font-weight:600;font-size:12px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--ink-3);
+    border-bottom:1px solid var(--rule);padding:0 12px 7px 0;
+  }
+  table.nv td{border-bottom:1px solid var(--rule);padding:9px 12px 9px 0;vertical-align:top}
+  table.nv td:first-child{white-space:nowrap;color:var(--ink-2)}
+
+  .path{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;
+    background:var(--surface-2);border-radius:3px;padding:2px 6px;
+  }
+  .prompt{
+    font-family:'IBM Plex Mono',monospace;font-size:13.5px;line-height:1.6;
+    background:var(--ink);color:#E9ECF1;border-radius:6px;
+    padding:14px 16px;margin:12px 0 0;white-space:pre-wrap;
+  }
+  .prompt .cue{color:#6ED6D6}
+
+  .note{
+    background:var(--warn-tint);border-left:2px solid var(--warn-rule);
+    padding:12px 16px;margin:14px 0 0;font-size:14px;
+  }
+  .note strong{font-weight:600}
+
+  a{color:var(--accent)}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  @media (max-width:560px){
+    body{padding:36px 18px 72px}
+    h1{font-size:27px}
+    .steps{padding-left:22px}
+    .step::before{left:-26px}
+    .meta-table td:first-child{width:110px}
+  }
+</style>
+</head>
+<body>
+
+<span class="badge">Instruction</span>
+<h1>วิธีใช้งาน design-token-builder</h1>
+<p class="lede">Skill สำหรับสร้างชุด Design Token ตามมาตรฐาน W3C DTCG พร้อม HTML preview และสร้าง Variables ลง Figma ให้อัตโนมัติ</p>
+
+<table class="meta-table">
+  <tr><td>เวอร์ชัน</td><td><span class="path">1.0.0</span> — ใช้เวอร์ชันล่าสุดที่อยู่บน repo เสมอ</td></tr>
+  <tr><td>ผลลัพธ์</td><td>ไฟล์ Token JSON, ไฟล์ HTML preview และ (ถ้าเลือก) Figma Variables + หน้า Foundation</td></tr>
+  <tr><td>ต้องมี</td><td>บัญชี Claude แผน Pro ขึ้นไป, Figma connector และไฟล์ Figma ที่แก้ไขได้</td></tr>
+  <tr><td>เวลาที่ใช้</td><td>ประมาณ 15–30 นาที ขึ้นกับจำนวน theme และ brand</td></tr>
+  <tr><td>ตัวอย่างผลลัพธ์</td><td><a href="token-preview-sample.html">เปิดดูตัวอย่าง HTML preview</a> — สร้างจากค่าสมมติ ไม่ใช่โปรเจกต์จริง</td></tr>
+</table>
+
+<div class="group">
+  <span class="group-num">01</span>
+  <h2>สิ่งที่ต้องเตรียมก่อนการใช้งาน</h2>
+</div>
+
+<ol class="steps">
+
+  <li class="step">
+    <span class="step-key">1.1</span>
+    <h3>ดาวน์โหลด skill เวอร์ชันล่าสุด</h3>
+    <p>ดาวน์โหลดโฟลเดอร์ <span class="path">design-token-builder</span> จาก repo โดยใช้เวอร์ชันล่าสุดที่อัปไว้เสมอ ตรวจได้จาก tag ล่าสุดหรือไฟล์ <span class="path">CHANGELOG.md</span></p>
+    <p>ภายในโฟลเดอร์ต้องมีครบตามนี้:</p>
+    <table class="nv">
+      <tr><th>ไฟล์</th><th>หน้าที่</th></tr>
+      <tr><td><span class="path">SKILL.md</span></td><td>ตัวคำสั่งหลัก</td></tr>
+      <tr><td><span class="path">reference/</span></td><td>ไฟล์อ้างอิง 6 ไฟล์ ขาดไม่ได้แม้แต่ไฟล์เดียว</td></tr>
+      <tr><td><span class="path">CHANGELOG.md</span></td><td>ประวัติเวอร์ชัน</td></tr>
+    </table>
+    <p style="margin-top:12px">บีบเป็นไฟล์ <span class="path">.zip</span> โดยให้ <strong>โฟลเดอร์ design-token-builder เป็นตัวนอกสุด</strong> ไม่ใช่บีบไฟล์ลอยๆ เข้าไป และชื่อโฟลเดอร์ต้องตรงกับชื่อ skill</p>
+  </li>
+
+  <li class="step">
+    <span class="step-key">1.2</span>
+    <h3>ติดตั้งลง Claude</h3>
+    <p>เปิดสิทธิ์ก่อน แล้วค่อยอัปโหลด ทำครั้งเดียวจบ</p>
+    <ol>
+      <li>เข้า <a href="https://claude.ai">claude.ai</a> แล้วกดรูปโปรไฟล์มุมล่างซ้าย → <strong>Settings</strong></li>
+      <li>ไปที่ <strong>Capabilities</strong> แล้วเปิด <strong>Code execution and file creation</strong> — ถ้าไม่เปิด skill จะไม่ทำงาน</li>
+      <li>กลับมาที่เมนู <strong>Customize</strong> → <strong>Skills</strong></li>
+      <li>กดปุ่ม <strong>+</strong> หรือ <strong>Add</strong> แล้วเลือก <strong>Upload skill</strong></li>
+      <li>เลือกไฟล์ <span class="path">design-token-builder.zip</span> ที่เตรียมไว้จากข้อ 1.1</li>
+      <li>รอสักครู่ให้ขึ้นในรายการ แล้ว <strong>toggle เปิด</strong> ให้เป็นสถานะใช้งาน</li>
+    </ol>
+    <div class="note">
+      <strong>ถ้าใช้แผน Team หรือ Enterprise:</strong> เจ้าของ workspace ต้องเข้าไปเปิดทั้ง <em>Code execution and file creation</em> และ <em>Skills</em> ที่ Organization settings → Skills ก่อน ผู้ใช้ทั่วไปถึงจะอัปโหลดได้
+    </div>
+  </li>
+
+  <li class="step">
+    <span class="step-key">1.3</span>
+    <h3>เตรียมไฟล์ Figma เปล่า</h3>
+    <p>สร้างไฟล์ Figma Design ใหม่แบบว่างๆ ไว้ 1 ไฟล์ เพื่อให้ Claude เข้าไปสร้าง Variables และหน้า Foundation ให้</p>
+    <table class="nv">
+      <tr><th>ต้องมี</th><th>รายละเอียด</th></tr>
+      <tr><td>ประเภทไฟล์</td><td>Figma Design (URL ขึ้นต้นด้วย <span class="path">/design/</span>)</td></tr>
+      <tr><td>สิทธิ์</td><td>ต้องเป็นสิทธิ์ <strong>แก้ไขได้</strong> ไม่ใช่ view only</td></tr>
+      <tr><td>สถานะ</td><td>ไฟล์เปล่า ไม่มี variable collection เดิมค้างอยู่</td></tr>
+      <tr><td>URL</td><td>ก๊อป URL ของไฟล์เก็บไว้ เดี๋ยว Claude จะขอ</td></tr>
+    </table>
+  </li>
+
+  <li class="step">
+    <span class="step-key">1.4</span>
+    <h3>ต่อ Figma connector เข้ากับ Claude</h3>
+    <p>เตรียมไฟล์ Figma อย่างเดียวไม่พอ Claude ต้องมีสิทธิ์เข้าไปเขียนในไฟล์นั้นด้วย ถ้าข้ามขั้นนี้ ทุกอย่างจะทำงานปกติจนถึงตอนสร้าง Variables แล้วค้าง</p>
+    <ol>
+      <li>ที่ claude.ai กดรูปโปรไฟล์มุมล่างซ้าย &rarr; <strong>Settings</strong> &rarr; <strong>Connectors</strong></li>
+      <li>กด <strong>Browse connectors</strong> แล้วค้นคำว่า <em>Figma</em></li>
+      <li>กด <strong>Connect</strong> แล้วอนุญาตสิทธิ์ผ่านหน้า Figma ที่เด้งขึ้นมา</li>
+      <li>กลับมาที่แชท เปิด toggle <strong>Figma</strong> ในเมนูเครื่องมือใต้ช่องพิมพ์</li>
+      <li>ทดสอบด้วยการพิมพ์ว่า <em>&ldquo;อ่านไฟล์ Figma นี้ให้หน่อย&rdquo;</em> พร้อมวาง URL ถ้าตอบกลับมาได้คือพร้อมใช้งาน</li>
+    </ol>
+    <div class="note">
+      บัญชี Figma ที่ใช้ต่อ connector ต้องเป็นบัญชีที่ <strong>มีสิทธิ์แก้ไขไฟล์นั้นจริง</strong> ต่อด้วยบัญชีที่เห็นไฟล์แบบ view only จะสร้าง Variables ไม่ได้
+    </div>
+  </li>
+
+  <li class="step">
+    <span class="step-key">1.5</span>
+    <h3>เตรียมค่าสีและฟอนต์ของแบรนด์</h3>
+    <p>Claude จะถามค่าพวกนี้ทีละข้อในขั้นตอนที่ 2.2 และจะไม่เริ่มสร้าง token จนกว่าจะได้ครบ เตรียมไว้ก่อนจะได้ไม่ต้องหยุดไปเปิดไฟล์ brand กลางบทสนทนา</p>
+    <table class="nv">
+      <tr><th>รายการ</th><th>ต้องเตรียม</th></tr>
+      <tr><td>ชื่อโปรเจกต์</td><td>ใช้ขึ้นหน้า Cover ใน Figma</td></tr>
+      <tr><td>Primary</td><td>ค่า hex สีหลักของแบรนด์ &mdash; <strong>จำเป็น ไม่มีค่าเริ่มต้นให้</strong></td></tr>
+      <tr><td>Secondary</td><td>ค่า hex &mdash; ถ้าไม่มี Claude จะเสนอ 3 ตัวเลือกให้</td></tr>
+      <tr><td>Neutral</td><td>ค่า hex &mdash; ถ้าไม่มี Claude จะเสนอ 3 ตัวเลือกให้</td></tr>
+      <tr><td>Accent</td><td>ค่า hex &mdash; ถ้าไม่มี Claude จะเสนอ 3 ชุดพาเลตต์ให้เลือก</td></tr>
+      <tr><td>Status 4 สี</td><td>hex ของ Success / Warning / Error / Info</td></tr>
+      <tr><td>ฟอนต์</td><td>ชื่อ font family ที่แบรนด์ใช้ (ค่าเริ่มต้นคือ Noto Sans Thai)</td></tr>
+      <tr><td>ขนาดฐาน</td><td>ขนาดตัวอักษรพื้นฐาน (ค่าเริ่มต้นคือ 16px)</td></tr>
+      <tr><td>Theme</td><td>ต้องการ Light/Dark ไหม และมี custom theme เพิ่มไหม</td></tr>
+    </table>
+  </li>
+
+</ol>
+
+<div class="group">
+  <span class="group-num">02</span>
+  <h2>เริ่มคำสั่งการสร้าง design token</h2>
+</div>
+
+<ol class="steps">
+
+  <li class="step">
+    <span class="step-key">2.1</span>
+    <h3>เปิด Claude แล้วสั่งสร้าง token</h3>
+    <p>เปิดแชทใหม่ แล้วพิมพ์คำสั่งพร้อมเรียกชื่อ skill</p>
+    <div class="prompt"><span class="cue">›</span> สร้าง design token ให้หน่อย /design-token-builder</div>
+  </li>
+
+  <li class="step">
+    <span class="step-key">2.2</span>
+    <h3>ตอบชุดคำถามจาก Claude</h3>
+    <p>Claude จะถามทีละข้อเพื่อเก็บเป็น requirement ตอบให้ครบทุกข้อ ระบบจะไม่เริ่มสร้าง token จนกว่าจะได้ข้อมูลครบ</p>
+    <table class="nv">
+      <tr><th>ลำดับ</th><th>คำถาม</th></tr>
+      <tr><td>1</td><td>ชื่อโปรเจกต์ (ใช้ขึ้นหน้า Cover ใน Figma)</td></tr>
+      <tr><td>2–6</td><td>ค่าสี: Primary, Secondary, Neutral, Accent และ Status ทั้ง 4 (Success / Warning / Error / Info)</td></tr>
+      <tr><td>7</td><td>ต้องการ Light/Dark mode ไหม และมี custom theme เพิ่มไหม</td></tr>
+      <tr><td>8</td><td>ฟอนต์และขนาดฐาน</td></tr>
+      <tr><td>9</td><td>แพลตฟอร์มปลายทาง: Mobile App หรือ Webview หรือทั้งคู่</td></tr>
+    </table>
+  </li>
+
+  <li class="step">
+    <span class="step-key">2.3</span>
+    <h3>ตรวจสอบ HTML preview</h3>
+    <p>Claude จะส่ง Token JSON พร้อมไฟล์ HTML preview มาให้ เปิดไฟล์ preview แล้วไล่ดูให้ครบทุกหมวด &mdash; Color, Typography, Spacing, Radius, Elevation, Border และ Focus ring</p>
+    <p><strong>ถ้าต้องการแก้:</strong> พิมพ์สั่งแก้ได้เลยในแชทเดิม เช่น</p>
+    <div class="prompt"><span class="cue">&rsaquo;</span> ปรับ radius md เป็น 12px แล้วออก preview ใหม่</div>
+    <div class="note" style="margin-top:16px">
+      <strong>(Optional) เก็บ Token JSON ไว้ส่ง developer</strong><br>
+      ถ้าต้องการส่งต่อให้ทีม developer เอาไปใช้ ให้ดาวน์โหลดไฟล์ Token JSON เก็บไว้ด้วย ไฟล์นี้คือของที่เอาไปต่อกับโค้ดได้จริง ส่วน HTML preview มีไว้ตรวจด้วยตาเท่านั้น
+    </div>
+  </li>
+
+  <li class="step">
+    <span class="step-key">2.4</span>
+    <h3>ตอบ Y/N เพื่อสร้างลง Figma</h3>
+    <p>เมื่อตรวจ preview เรียบร้อยแล้ว <strong>ไม่ต้องพิมพ์คำสั่งอะไรเพิ่ม</strong> Claude จะถามเองเป็นคำถาม Y/N ให้ตอบตามที่ต้องการ</p>
+    <p>คำถามมี <strong>สองข้อ แยกกันคนละเรื่อง</strong> ตอบ Y ข้อแรกไม่ได้แปลว่าข้อสองจะถูกข้ามไป จะโดนถามทั้งสองข้อเสมอ</p>
+    <table class="nv">
+      <tr><th>คำถาม</th><th>ตอบ Y แล้วได้อะไร</th></tr>
+      <tr>
+        <td><em>&ldquo;Create variables to Figma? (Y/N)&rdquo;</em></td>
+        <td>สร้างโครงหน้าและ Variables ทั้ง 3 collection ลงไฟล์ Figma แล้วหยุดให้ตรวจ &mdash; ยังไม่ทำ QA รอบสุดท้าย</td>
+      </tr>
+      <tr>
+        <td><em>&ldquo;Would you like to create a design style guideline file directly on Figma?&rdquo;</em></td>
+        <td>ทำต่อจนครบ ทั้งหน้า Foundation ทุกหน้าและ QA รอบสุดท้าย (ตรวจชื่อซ้ำ ตรวจว่าไม่มีค่า hardcode ตรวจสลับ Light/Dark)</td>
+      </tr>
+    </table>
+    <div class="note">
+      <strong>อยากได้ครบทั้งชุด</strong> ให้ตอบ <span class="path">Y</span> ทั้งสองข้อ &mdash; ถ้าตอบ <span class="path">N</span> ข้อแรกแต่ตอบ <span class="path">Y</span> ข้อสอง ก็ยังได้ผลครบเหมือนกัน เพราะข้อสองครอบคลุมงานของข้อแรกอยู่แล้ว
+    </div>
+    <p style="margin-top:14px">ระหว่างทาง Claude จะขอ URL ของไฟล์ Figma ที่เตรียมไว้จากข้อ 1.3 และจะหยุดให้ยืนยันอีกครั้งก่อนปิดงาน</p>
+  </li>
+
+</ol>
+
+</body>
+</html>

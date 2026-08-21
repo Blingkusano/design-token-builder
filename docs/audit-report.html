@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Audit Report: design-token-builder</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'IBM Plex Sans Thai',sans-serif;max-width:960px;margin:40px auto;padding:0 24px;color:#1a1a2e;line-height:1.6;background:#fff}
+  h1{font-size:28px;margin:0 0 4px}
+  h2{font-size:20px;margin:32px 0 12px}
+  .meta{color:#666;margin:0 0 20px}
+  .verdict{display:inline-block;padding:8px 20px;border-radius:8px;font-weight:700;font-size:18px;color:#fff;margin:0 0 24px}
+  .verdict.ready{background:#2b8a3e}.verdict.minor{background:#e8a305}.verdict.revise{background:#e8590c}.verdict.notready{background:#c92a2a}
+  table{width:100%;border-collapse:collapse}
+  th,td{border:1px solid #dee2e6;padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:#f1f3f5}
+  tr.pass td{background:#ebfbee}tr.partial td{background:#fff9db}tr.fail td{background:#fff5f5}
+  .line-ref{background:#fff3bf;border-radius:4px;padding:1px 6px;font-weight:600;white-space:nowrap}
+  code{background:#f1f3f5;border-radius:4px;padding:1px 5px;font-size:.9em}
+  ol.fixes li{margin-bottom:8px}
+  ul.evidence{margin:6px 0 0;padding-left:18px}
+  ul.ref-check{padding-left:18px}ul.ref-check li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<h1>Skill Audit Report: design-token-builder</h1>
+<p class="meta">design-token-builder/SKILL.md · 199/500 lines · 16,342/25,000 chars · 2026-08-21</p>
+<div class="verdict ready">12/12 — Production-ready</div>
+<table>
+  <tr><th>#</th><th>Criterion</th><th>Result</th><th>Reason (evidence)</th></tr>
+  <tr class="pass"><td>1</td><td>Anthropic baseline (frontmatter)</td><td>✅</td><td>Frontmatter is valid with a kebab-case <code>name</code> and a description stating both what the skill does and when to trigger it, including the implicit-trigger case where the user never says "design token".</td></tr>
+  <tr class="pass"><td>2</td><td>Body completeness (role/author/version)</td><td>✅</td><td>The About block declares a SemVer version, a named author/editor, and a specific role rather than a generic assistant framing.</td></tr>
+  <tr class="pass"><td>3</td><td>Example results</td><td>✅</td><td>One end-to-end worked example traces a single spacing value through all three output types — token JSON, HTML preview row, and Figma variable path.</td></tr>
+  <tr class="pass"><td>4</td><td>Consistent output format</td><td>✅</td><td>A single locked JSON schema plus fixed HTML and Figma structures are defined in the reference files and consistently pointed to; the worked example conforms to them.</td></tr>
+  <tr class="pass"><td>5</td><td>Do &amp; Don't</td><td>✅</td><td>No headed Do/Don't list, but explicit MUST/NEVER-equivalent prohibitions appear throughout, which the rubric accepts as equivalent.</td></tr>
+  <tr class="pass"><td>6</td><td>Input specification</td><td>✅</td><td>Phase 2 enumerates every required input, and missing-input behavior is defined both per-question through defaults and alternative palettes, and globally by a rule barring progress until all details are gathered.</td></tr>
+  <tr class="pass"><td>7</td><td>Clear use cases</td><td>✅</td><td>Five concrete, non-overlapping trigger scenarios are listed, each naming a distinct situation rather than a generic catch-all.</td></tr>
+  <tr class="pass"><td>8</td><td>Clear workflow</td><td>✅</td><td>Phase 1 runs end-to-end from onboarding to hand-off, with Part 2 gated behind two independent Yes/No branches that each state exactly which phases they activate.</td></tr>
+  <tr class="pass"><td>9</td><td>Instruction &amp; Action Sequences</td><td>✅</td><td>All onboarding questions are numbered 1–9 in a single unbroken sequence, and each phase step is written as a concrete verb plus object the model can execute without interpretation.</td></tr>
+  <tr class="pass"><td>10</td><td>English-first content (Thai exception)</td><td>✅</td><td>All instruction text is English; the Thai font named as a default is a token value, not instruction text.</td></tr>
+  <tr class="pass"><td>11</td><td>Optimized content</td><td>✅</td><td>An explicit conciseness rule governs replies, version history lives in a separate CHANGELOG.md rather than in the skill body, and no duplicated or decorative content remains.</td></tr>
+  <tr class="pass"><td>12</td><td>≤ 500 lines &amp; ≤ 25,000 chars</td><td>✅</td><td>199 lines and 16,342 characters, comfortably under both ceilings with room for future additions.</td></tr>
+</table>
+<h2>Top fixes (priority order)</h2>
+<ol class="fixes">
+  <li><strong>Phase 2b</strong> — <code>Primary Color</code> and <code>Status Colors</code> are the only onboarding questions with no defined fallback, unlike Secondary, Neutral, and Accent which each offer alternatives when skipped. Add a matching fallback so no question can stall the interview.</li>
+  <li><strong>Body</strong> — consolidate the prohibitions currently scattered across Phases 4, 5, 7 and Appendix B into one headed <code>## Do</code> / <code>## Don't</code> block. Criterion 5 already passes on the MUST/NEVER equivalence, but a single block is easier to maintain and harder to contradict as the skill grows.</li>
+  <li><strong>Phase 2d</strong> — the <code>Noto Sans Thai</code> default ties a generic generator to one regional market. Consider a neutral default with Noto Sans Thai offered as a named option, so the skill reads as region-agnostic in a public repository.</li>
+</ol>
+<h2>Reference &amp; Linkage Check (supplementary, not scored)</h2>
+<ul class="ref-check">
+  <li><strong>reference/color.md</strong>: ✅ — Read in full. Sole owner of the color naming rule and the Tier 1/2/3 role roster; its stated token counts (background 31, content 24, border 15) were recounted against its own role lists and match.</li>
+  <li><strong>reference/typography.md</strong>: ✅ — Read in full. Sole owner of the locked size-multiplier table and the 22-token semantic scale; SKILL.md defers to it and duplicates none of its values.</li>
+  <li><strong>reference/spacing-radius-elevation-borderwidth-focusring.md</strong>: ✅ — Read in full. Its 12 spacing steps and 13 radius steps match the variable counts declared independently in figma-variable-structure.md.</li>
+  <li><strong>reference/html-preview-structure.md</strong>: ✅ — Read in full. Sole owner of the preview shell, section order, and interaction patterns; no overlap with the other references.</li>
+  <li><strong>reference/color.md ↔ reference/figma-variable-structure.md</strong>: ✅ — Read both in full. They assign different palette steps to the same <code>-primary</code> tokens (contrast-driven versus a 400–600 clamp), but the divergence is declared deliberate and scoped by context — JSON output follows color.md, Figma variables follow the clamp — with an explicit instruction not to reconcile them. Scoped alternatives, not an AND-forced contradiction.</li>
+  <li><strong>reference/figma-variable-structure.md ↔ reference/figma-page-structure.md</strong>: ✅ — Read both in full. Both are required together at Phase 7 but govern different objects (variable collections versus page skeleton). The apparent tension between the Global collection being hidden from publishing and the Global Colors table appearing on a canvas page is resolved explicitly in figma-page-structure.md.</li>
+</ul>
+</body>
+</html>
