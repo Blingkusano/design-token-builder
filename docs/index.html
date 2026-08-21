@@ -18,6 +18,11 @@
   .card h2{font-size:17px;margin:0 0 5px;font-weight:600}
   .card p{margin:0;font-size:14px;color:var(--ink-2)}
   .card .k{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:7px}
+  a.card.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  a.card.primary:hover{background:#0A5A5A;border-color:#0A5A5A}
+  a.card.primary .k{color:rgba(255,255,255,.72)}
+  a.card.primary p{color:rgba(255,255,255,.88)}
+  .hint{font-size:13px;color:var(--ink-3);margin:-4px 0 30px}
   footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3)}
   code{font-family:'IBM Plex Mono',monospace;background:var(--surface-2);border-radius:3px;padding:2px 6px;font-size:.9em}
 </style>
@@ -27,6 +32,13 @@
 <span class="tag">Claude Skill</span>
 <h1>design-token-builder</h1>
 <p class="lede">สร้างชุด Design Token ตามมาตรฐาน W3C DTCG พร้อม HTML preview และสร้าง Variables ลง Figma ให้อัตโนมัติ</p>
+
+<a class="card primary" href="https://github.com/Blingkusano/design-token-builder/releases/latest/download/design-token-builder-skill.zip">
+  <span class="k">ดาวน์โหลด</span>
+  <h2>design-token-builder.zip &darr;</h2>
+  <p>ไฟล์ skill เวอร์ชันล่าสุด พร้อมอัปโหลดเข้า Claude ได้ทันที ไม่ต้องแตกไฟล์</p>
+</a>
+<p class="hint">อัปโหลดที่ Claude &rarr; Customize &rarr; Skills &rarr; + &rarr; Upload skill &mdash; ขั้นตอนเต็มอยู่ในหน้าวิธีใช้งานด้านล่าง</p>
 
 <a class="card" href="instruction.html">
   <span class="k">เริ่มที่นี่</span>
