@@ -2,7 +2,7 @@
 
 Claude Skill ที่สัมภาษณ์ requirement แล้วสร้างชุด Design Token ตามมาตรฐาน W3C DTCG พร้อม HTML preview และสร้าง Variables กับหน้า Foundation ลง Figma ให้อัตโนมัติ
 
-**เวอร์ชันปัจจุบัน:** 1.0.0 — ดูรายละเอียดที่ [CHANGELOG](design-token-builder/CHANGELOG.md)
+**เวอร์ชันปัจจุบัน:** 1.1.0 — ดูรายละเอียดที่ [CHANGELOG](design-token-builder/CHANGELOG.md)
 
 ## เปิดดูได้เลยจากเบราว์เซอร์
 

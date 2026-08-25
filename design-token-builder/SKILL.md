@@ -1,10 +1,10 @@
 ---
 name: design-token-builder
-description: "Expert design token engine that interviews the user and generates a structured, semantic tier-3 Design Token JSON file (W3C DTCG format) plus a mandatory HTML preview, adhering to platform and accessibility standards. Enforces a single locked naming convention and a fixed JSON output schema so every generation run produces an identical structure. Use this skill whenever the user wants to build, generate, audit, or update a design token system — color/typography/spacing/radius/border/elevation scales, a multi-brand or multi-theme (Light/Dark) token set, or wants those tokens wired directly into a Figma file as Variables and Foundation documentation pages — even if they only say 'set up our design tokens' or 'build a Figma variable library' without using the words 'design token' explicitly."
+description: "Expert design token engine that interviews the user and generates a structured, semantic tier-3 Design Token JSON file (W3C DTCG format) plus a mandatory HTML preview — both delivered as files on every run, in that order — adhering to platform and accessibility standards. Enforces a single locked naming convention and a fixed JSON output schema so every generation run produces an identical structure. Use this skill whenever the user wants to build, generate, audit, or update a design token system — color/typography/spacing/radius/border/elevation scales, a multi-brand or multi-theme (Light/Dark) token set, or wants those tokens wired directly into a Figma file as Variables and Foundation documentation pages — even if they only say 'set up our design tokens' or 'build a Figma variable library' without using the words 'design token' explicitly."
 ---
 
 ## About
-- **Version**: 1.0.0
+- **Version**: 1.1.0
 - **Author / Editor**: Sutthiprapa Thawornsatit
 - **Role**: see Purpose below — an advanced Design System Designer generating W3C DTCG-compliant token JSON and, optionally, a matching Figma Variables library.
 
@@ -27,15 +27,15 @@ A generation run for a single spacing value looks like this end-to-end:
 ```json
 {
   "spacing": {
-    "global": { "space-16": { "$value": "16px", "$type": "dimension" } },
-    "semantic": { "md": { "$value": "{spacing.global.space-16}", "$type": "dimension" } }
+    "global": { "space-8": { "$value": "8px", "$type": "dimension" } },
+    "semantic": { "md": { "$value": "{spacing.global.space-8}", "$type": "dimension" } }
   }
 }
 ```
 
 **2. HTML preview** — the same `spacing.semantic.md` token renders as one row in the Spacing simulator (per `reference/html-preview-structure.md`), showing its resolved pixel value and a visual bar at that width.
 
-**3. Figma variables** (Part 2 only, if the user opts in) — the same value becomes `Global/spacing/space-16` (single mode, literal `16px`) aliased by `Foundation/spacing/md`, exactly per `reference/figma-variable-structure.md`.
+**3. Figma variables** (Part 2 only, if the user opts in) — the same value becomes `Global/spacing/space-8` (single mode, literal `8`) aliased by `Foundation/spacing/md`, exactly per `reference/figma-variable-structure.md`.
 
 ---
 ## PART 1: DESIGN TOKEN GENERATION
@@ -44,7 +44,11 @@ A generation run for a single spacing value looks like this end-to-end:
 1. **Onboarding & Interview:** Complete the onboarding questions sequentially in **Phase 2**. Wait for explicit user responses.
 2. **Analyze & Expand:** Generate primitive scales and map semantic theme objects (`light` / `dark`) based on platform selections, per the reference files (Phase 4).
 3. **Map Components:** Create full token sets for all mandatory components (Phase 6).
-4. **Output & Handoff:** Present the final JSON schema. Do not include conversational text with the JSON. Also generate an HTML preview file per `reference/html-preview-structure.md` — this is a mandatory second deliverable, not optional, so the token JSON can be visually checked (colors, type scale, spacing/radius simulators) before hand-off rather than trusted blind.
+4. **Output & Handoff — the two mandatory first deliverables:** every generation run's **first output is always exactly two files, delivered together**, before any follow-up question, summary, or Figma work:
+   1. **The HTML preview file** — built per `reference/html-preview-structure.md`, with the token JSON embedded in it.
+   2. **The token JSON file** — the full W3C DTCG schema, written to a `.json` file.
+
+   Both are files, always. Never substitute an inline JSON code block in the chat for the JSON file, never describe the tokens instead of generating them, and never treat the HTML preview as optional or as something offered afterwards — the preview exists so the token set can be checked visually (color ramps, semantic tables, type scale, spacing/radius simulators) rather than trusted blind, and the JSON exists so it can be imported. Deliver the HTML preview first, then the JSON, then continue to step 5. Do not include conversational text inside the JSON itself.
 5. **Figma Variables Follow-up:** Immediately after presenting the JSON and the HTML preview, ask the user, presented as a clear selectable Yes/No choice:
    > *"Create variables to Figma? (Y/N)"*
    * **If No:** Proceed to step 6.
@@ -64,16 +68,32 @@ Execute sequentially. **Do not proceed** to token generation until all details a
 1. **Project Name:** what should this token set / Figma file be called? (Used later on the Figma Cover page.)
 
 #### 2b. Palette Setup
-2. **Primary Color:** brand's primary hex code?
-3. **Secondary Color:** secondary hex code? *(If skipped: 3 alternative options)*
-4. **Neutral Color:** neutral hex code? *(If skipped: 3 alternative options)*
-5. **Accent Color:** accent hex code? *(If skipped: three 5-color palettes for selection)*
-6. **Status Colors:** hex codes for Success, Warning, Error, Info?
+2. **Primary Color:** brand's primary hex code? **Required** — the system can't be generated without it.
+3. **Secondary Color:** secondary hex code? Offer three answers, presented as a selectable choice:
+   * a hex code the user supplies, **or**
+   * *"Suggest options for me"* → offer 3 alternatives derived from Primary, **or**
+   * ***"ไม่มี / None — this design system has no secondary color"*** → see the **Optional-palette rule** below.
+4. **Neutral Color:** neutral hex code? **Required** *(If skipped: offer 3 alternative options)* — `base` roles across every element depend on it, so there is no "None" answer here.
+5. **Accent Color:** accent hex code? Same three-way choice as question 3:
+   * a hex code the user supplies, **or**
+   * *"Suggest options for me"* → offer three 5-color palettes for selection, **or**
+   * ***"ไม่มี / None — this design system has no accent color"*** → see the **Optional-palette rule** below.
+6. **Status Colors:** hex codes for Success, Warning, Error, Info? **Required** — status roles exist in `background`, `content`, and `border`.
+
+> ##### Optional-palette rule (applies to Secondary and Accent only)
+> **"None" means generate nothing for that palette — never invent a replacement.** If the user answers *ไม่มี / None* to question 3 or 5, do not derive a colour from Primary "just to fill the slot", do not fall back to a default hex, and do not ask again later. Instead:
+> * **Tier 1:** skip that palette's entire 11-step ramp in `color.global` — no `color.global.secondary-*` / `color.global.accent-*` keys exist at all.
+> * **Tier 2:** skip every `color.semantic` role that maps to it, per `reference/color.md`'s value-mapping convention. Concretely: **no Secondary** removes `background.brand_secondary-primary/-secondary/-tertiary/-quaternary/-solid` (5 tokens) and `content.brand_secondary-primary/-secondary/-tertiary/-quaternary` (4 tokens); **no Accent** removes `content.accent-primary/-secondary/-tertiary/-quaternary` (4 tokens). Nothing else moves — `border`, `focus_ring`, and `overlay` carry no secondary/accent role, and `brand` (Primary) is unaffected.
+> * **Tier 3:** any `color.component.*` token that would have aliased a removed role aliases the `brand` (Primary) equivalent instead, per `color.md`'s "fall back to the nearest available Tier 2 token" rule.
+> * **Figma (Part 2):** the same omissions carry through — no `Global` `color/secondary/*` or `color/accent/*` group, no `Color` variables for the removed roles, and the affected page tables simply have fewer rows.
+> * **HTML preview:** render only the palettes and roles that exist — no empty strip, no placeholder row, no "not defined" note.
+>
+> Record which optional palettes are present before Phase 5 begins, and treat that record as the source of truth for every downstream count in `reference/color.md`'s self-check.
 
 #### 2c. Theme Configuration
 7. **Modes & Custom Themes:**
    * Dark and Light modes required? (Y/N)
-   * Custom Theme required? (Y/N) — *If Yes:* ask for its Primary/Secondary hex; other variables default to the global theme. Ask: *"Do you have more custom themes?"*
+   * Custom Theme required? (Y/N) — *If Yes:* ask for its Primary hex, plus its Secondary hex **only if the base system has a Secondary palette** (per 2b question 3); other variables default to the global theme. Ask: *"Do you have more custom themes?"*
 
 #### 2d. Typography Basics
 8. **Font Architecture:**
@@ -188,6 +208,13 @@ Per `reference/figma-variable-structure.md`'s "Publishing visibility" rule: once
 * **Pitfall 4:** Copying actual values (hex codes, font sizes, spacing numbers) from a layout-reference Figma file into this one. **Fix:** `reference/figma-page-structure.md`'s layout reference is for structure only — every value on every page must trace back to this skill's own `Global`/`Color`/`Foundation` variables.
 
 ### 📊 APPENDIX C: Success Verification Matrix
+* [ ] **Both First Deliverables Shipped:** the run produced an HTML preview file **and** a token JSON file, together, as the first output — neither replaced by an inline code block or deferred.
+* [ ] **Background Direction Inverted:** every `background.*-primary` is the lightest step of its family, deepening through `-quaternary`, with `-solid` the single dark step.
+* [ ] **`background.base-plain` Present:** flat token, `{color.global.white}` in Light / `{color.global.black}` in Dark.
+* [ ] **Content Band Held:** every `content.*` token sits in `400`–`700`, and `brand`/`brand_secondary`/`accent` are pinned to `600`/`700`/`500`/`400`.
+* [ ] **Optional Palettes Honoured:** for every palette the user answered *ไม่มี / None* to, zero `color.global.*` steps and zero `color.semantic.*` roles were generated — and no substitute colour was invented anywhere.
+* [ ] **Weight Ladder Applied:** every `typography.semantic` name ends in a ladder level (`default`/`strong` on a fresh run) — no `-regular`/`-bold`/numeric suffixes.
+* [ ] **`md` = 8px:** both `spacing.semantic.md` and `radius.semantic.md` resolve to `8px`.
 * [ ] **Two-Tier Separation Complete:** across `color`, `elevation`, `typography`, `spacing`, `radius`.
 * [ ] **Scope Locking Active:** 100% of variables use targeted layout scopes.
 * [ ] **Theme Synchronized:** every semantic color variable resolves correctly across Light/Dark.
