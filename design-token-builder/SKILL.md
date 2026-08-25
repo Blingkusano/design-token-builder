@@ -4,7 +4,7 @@ description: "Expert design token engine that interviews the user and generates 
 ---
 
 ## About
-- **Version**: 1.1.0
+- **Version**: 1.1.1
 - **Author / Editor**: Sutthiprapa Thawornsatit
 - **Role**: see Purpose below — an advanced Design System Designer generating W3C DTCG-compliant token JSON and, optionally, a matching Figma Variables library.
 
@@ -36,6 +36,22 @@ A generation run for a single spacing value looks like this end-to-end:
 **2. HTML preview** — the same `spacing.semantic.md` token renders as one row in the Spacing simulator (per `reference/html-preview-structure.md`), showing its resolved pixel value and a visual bar at that width.
 
 **3. Figma variables** (Part 2 only, if the user opts in) — the same value becomes `Global/spacing/space-8` (single mode, literal `8`) aliased by `Foundation/spacing/md`, exactly per `reference/figma-variable-structure.md`.
+
+## Do
+- **Read the reference files in full before writing any JSON** (Phase 4) — they own the schema, the naming convention, and every closed-set rule. When this file and a reference file disagree about a value or scope, the reference file wins.
+- **Ask one onboarding question at a time** and wait for a real answer before moving on (Phase 2).
+- **Generate Tier 1 before Tier 2**, every family, every run (Phase 5).
+- **Deliver the HTML preview file first, then the token JSON file** — two files, together, as the run's first output (Phase 1 step 4).
+- **Validate contrast numerically** against WCAG 2.1 AA before emitting any colour value (Phase 3).
+- **Keep replies concise** and scoped to the current phase; don't restate what the user already confirmed.
+
+## Don't
+- **Never write a literal at a semantic tier** — every `*.semantic.*` and `color.component.*` value aliases its lower tier (Phase 5).
+- **Never substitute an inline code block for the JSON file**, describe tokens instead of generating them, or treat the HTML preview as optional or deferred (Phase 1 step 4).
+- **Never invent a colour for a palette the user answered *ไม่มี / None* to** — no derived substitute, no default hex, no asking again (Phase 2b).
+- **Never improvise** a token category, name, schema shape, Figma collection shape, page skeleton, or page layout that isn't already enumerated in a reference file (Phase 4, Phase 7).
+- **Never proceed to generation before Phase 2 is complete** (Phase 2).
+- **Never fix a contrast failure by moving a pinned value** — the fixed steps in `reference/color.md` stay fixed; move the surface or the text token instead.
 
 ---
 ## PART 1: DESIGN TOKEN GENERATION
@@ -149,7 +165,7 @@ Map colors and `elevation` across these component blocks. Alias colors through `
 
 ### Phase 7: FIGMA FILE STRUCTURE
 **Before touching the Figma file, `Read` both of the following in full and follow them exactly:**
-1. `reference/figma-variable-structure.md` — locks the target file to exactly three variable collections (`Global`/`Color`/`Foundation`), their naming/grouping convention, the Figma-only 400–600 clamp override for `-primary`-emphasis brand/status roles, and the rule that `Global` must be hidden from publishing while `Color`/`Foundation` stay published.
+1. `reference/figma-variable-structure.md` — locks the target file to exactly three variable collections (`Global`/`Color`/`Foundation`), their naming/grouping convention, the Figma-only 400–600 clamp override (that file owns the exact scope of the clamp — don't assume it from memory, read the table there), and the rule that `Global` must be hidden from publishing while `Color`/`Foundation` stay published.
 2. `reference/figma-page-structure.md` — locks the exact page skeleton (including the Cover page's project-name + primary-color spec) and the per-page UI layout for every Foundation sub-page.
 
 Don't improvise a different collection shape, page skeleton, or page layout than what those two files specify.
@@ -208,19 +224,24 @@ Per `reference/figma-variable-structure.md`'s "Publishing visibility" rule: once
 * **Pitfall 4:** Copying actual values (hex codes, font sizes, spacing numbers) from a layout-reference Figma file into this one. **Fix:** `reference/figma-page-structure.md`'s layout reference is for structure only — every value on every page must trace back to this skill's own `Global`/`Color`/`Foundation` variables.
 
 ### 📊 APPENDIX C: Success Verification Matrix
+
+**Part 1 — token JSON + HTML preview (check on every run):**
 * [ ] **Both First Deliverables Shipped:** the run produced an HTML preview file **and** a token JSON file, together, as the first output — neither replaced by an inline code block or deferred.
 * [ ] **Background Direction Inverted:** every `background.*-primary` is the lightest step of its family, deepening through `-quaternary`, with `-solid` the single dark step.
 * [ ] **`background.base-plain` Present:** flat token, `{color.global.white}` in Light / `{color.global.black}` in Dark.
 * [ ] **Content Band Held:** every `content.*` token sits in `400`–`700`, and `brand`/`brand_secondary`/`accent` are pinned to `600`/`700`/`500`/`400`.
+* [ ] **`brand_secondary-solid` Pinned:** resolves to step `500`, and every Tier 3 fill using it pairs with a text token that clears WCAG AA against it.
 * [ ] **Optional Palettes Honoured:** for every palette the user answered *ไม่มี / None* to, zero `color.global.*` steps and zero `color.semantic.*` roles were generated — and no substitute colour was invented anywhere.
 * [ ] **Weight Ladder Applied:** every `typography.semantic` name ends in a ladder level (`default`/`strong` on a fresh run) — no `-regular`/`-bold`/numeric suffixes.
 * [ ] **`md` = 8px:** both `spacing.semantic.md` and `radius.semantic.md` resolve to `8px`.
 * [ ] **Two-Tier Separation Complete:** across `color`, `elevation`, `typography`, `spacing`, `radius`.
-* [ ] **Scope Locking Active:** 100% of variables use targeted layout scopes.
-* [ ] **Theme Synchronized:** every semantic color variable resolves correctly across Light/Dark.
+* [ ] **Theme Synchronized:** every semantic color token resolves correctly across Light/Dark.
 * [ ] **Typography Standardized:** every `typography.semantic.*` value is 100% aliases into `typography.global`.
 * [ ] **Spacing & Radius Standardized:** every `spacing.semantic.*`/`radius.semantic.*` value aliases `*.global` — zero literals.
 * [ ] **Naming Clean:** every key `kebab-case`, zero stray underscores outside the documented disambiguation exception.
+
+**Part 2 — Figma (check only when the user opted into Phase 7/8; skip entirely otherwise):**
+* [ ] **Scope Locking Active:** 100% of variables use targeted layout scopes.
 * [ ] **Clean Auditing:** 0 hardcoded colors/sizes across the production canvas.
 * [ ] **Figma Collection Shape:** exactly `Global`/`Color`/`Foundation`, per `reference/figma-variable-structure.md` — no leftover legacy collections.
 * [ ] **Global Publishing Visibility:** every `Global` variable is hidden from publishing; `Color` and `Foundation` remain published, per `reference/figma-variable-structure.md`.
