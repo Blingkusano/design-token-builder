@@ -39,11 +39,10 @@ Changelog
 **Section 1 — "Semantic Colors":**
 * One sub-heading per `Color` collection element — `background`, `content`, `border`, `overlay`, `focus_ring` — each with a bold heading (the element name) followed by a table, all nested inside this one Section.
 * Row counts per element (see `figma-variable-structure.md`): background **32**, content **28**, border 15, overlay 1, focus_ring 4 — fewer when the project has no Secondary and/or Accent palette, per `color.md`'s conditional-roles table. A removed role gets **no row at all** — not an empty row, not a "—" row.
-* Within `background`, order rows per role as `primary → secondary → tertiary → quaternary → solid`, so the light-to-deep emphasis run and the single dark `-solid` step read in that order down the table. `base` additionally carries a `base-plain` row — place it first in the `base` group, since it's the plainest surface (`#FFFFFF` Light / `#000000` Dark).
-* Table columns: **Name** | **Light Value** | **Dark Value** | **Description**.
+* Within `background`, order rows per role as `primary → secondary → tertiary → quaternary → solid`, so the light-to-deep emphasis run and the single dark `-solid` step read in that order down the table. `base` additionally carries a `base-plain` row — place it first in the `base` group, since it's the plainest surface (`#FFFFFF`).
+* Table columns: **Name** | **Value** | **Description** — one value column, because the `Color` collection has a single mode.
   * **Name** — the role/emphasis key (e.g. `base-primary`, `brand-primary`).
-  * **Light Value** — a small color swatch plus the resolved hex, both driven by the `Light` mode of that `Color` variable.
-  * **Dark Value** — same, driven by the `Dark` mode of the same variable.
+  * **Value** — a small color swatch plus the resolved hex, both driven by that `Color` variable's `Value` mode.
   * **Description** — no description data exists yet; fill with a literal `-` for every row.
 
 **Section 2 — "Global Colors":**
@@ -84,11 +83,23 @@ Changelog
 ## Sub-page: `  --> Focus ring`
 
 * Small badge label "Style" at the top, then a title "Focus rings".
-* A row of cards, one per `color.semantic.[theme].focus_ring` role (`brand-primary`, `brand-secondary`, `error-primary`, `error-secondary`), each card showing: the role name, a colored ring/border around the card itself bound to that focus ring variable, and the resolved hex beneath the name.
+* A row of cards, one per `color.semantic.focus_ring` role (`brand-primary`, `brand-secondary`, `error-primary`, `error-secondary`), each card showing: the role name, a colored ring/border around the card itself bound to that focus ring variable, and the resolved hex beneath the name.
 
+## Plugin API constraints when building these pages (measured — not in Figma's own docs)
+
+Every table on these pages is auto-layout rows of fixed-width cells, and that shape walks straight into three traps. Each one renders as a plausible-looking but wrong page, so write code that already avoids them.
+
+* **`resize()` sets BOTH sizing modes to `FIXED`.** The natural way to build a fixed-width cell — `const c = figma.createAutoLayout('HORIZONTAL'); c.resize(w, 1); c.appendChild(text); c.resize(w, c.height)` — locks the height at `1px` on the first `resize`, so appending children never grows it and `c.height` is still `1` on the second. Every cell ends up 1px tall and the table renders as hairlines. **Fix: resize first, then re-open the axis you want hugging** — `c.resize(w, 1); c.counterAxisSizingMode = 'AUTO'; c.appendChild(text)`. The same trap hits any card built with `resize(w, h)` + `primaryAxisSizingMode = 'AUTO'`: set the AUTO axis *after* the resize, never before.
+* **`figma.createAutoLayout()` returns a frame with an opaque white fill.** Wrapper rows, cells and grids that should be transparent therefore carry a hardcoded `#FFFFFF`, which Phase 8b counts as a binding violation across hundreds of nodes. **Fix: set `fills = []` on every structural wrapper at creation time** — only nodes that are deliberately a surface get a bound fill.
+* **`strokeAlign = 'OUTSIDE'` gets clipped by an auto-layout parent.** A card whose ring sits outside its bounds loses the top and bottom runs of that ring, because the parent row hugs to the card's height and clips what spills past it — leaving what look like two vertical brackets. **Fix: use `strokeAlign = 'INSIDE'` for any ring or outline demo**, and set the four `stroke*Weight` properties explicitly rather than relying on `strokeWeight` alone.
+
+**Verify these with returned geometry, not with a screenshot.** All three produce pages that are structurally present and will pass a node-count check, so `return` the actual numbers — `{name, x, y, width, height, counterAxisSizingMode}` for a sample row and cell — and read them before moving on. Save screenshots for the one visual confirmation per page at the end.
+
+---
 ## Self-check before finishing Phase 7
 * Page names match the skeleton above exactly, including the `  --> ` prefix on every Foundation sub-page and the all-caps `FOUNDATION` divider page.
 * No "Getting Started" page exists, and no new `COMPONENT` page was created.
+* Every `  --> Color` table has exactly three columns — Name / Value / Description — with no Light/Dark column pair.
 * Cover page's background and text color are both variable-bound (never a literal fill), and the text reads the project name gathered in Phase 2 — not a placeholder.
 * Every value shown on every Foundation sub-page traces back to a `Global`/`Color`/`Foundation` variable created by this skill — nothing was copied from the layout reference used to design these pages, and this file contains no link back to that reference.
 * The "Global Colors" table on `  --> Color` is present and unaffected by `Global`'s hidden-from-publishing state.
@@ -97,3 +108,5 @@ Changelog
 * No page anywhere shows a swatch, row, or group for a palette the user answered *None* to.
 * The Typography table's Name column uses the semantic weight ladder (`-default`/`-strong`), and its Font Weight column shows the numeric weight.
 * The Spacing and Radius tables both show `md` = **8**, and the Radius table has 12 rows ending in `full` = 999.
+* Every table cell hugs its content vertically — sample one `Row` and one cell and confirm `height > 1`; a 1px cell means `resize()` locked the sizing mode.
+* Every structural wrapper (rows, cells, grids) has `fills = []`; only deliberate surfaces carry a bound fill.

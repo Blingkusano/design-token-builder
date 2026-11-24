@@ -5,7 +5,7 @@ Load this file in full before writing any `typography` JSON.
 ---
 ## The locked size multiplier table
 
-Pulled up whenever Phase 2c's Visual Scaling Check is answered "Yes." **Fixed — never ask the user to choose a ratio/multiplier, never offer `1.125`/`1.200`/`1.250`-style alternatives.**
+Always applied — every run derives every type size from the base font size through this table (there is no visual-scaling question). **Fixed — never ask the user to choose a ratio/multiplier, never offer `1.125`/`1.200`/`1.250`-style alternatives.**
 
 | Size (px, base = 16) | Multiplier (× base) |
 |---|---|
@@ -21,7 +21,17 @@ Pulled up whenever Phase 2c's Visual Scaling Check is answered "Yes." **Fixed �
 | 40 | ×2.5 |
 | 48 | ×3 |
 
-If the user's base font size isn't `16`, scale every step proportionally (`multiplier × user's base`) rather than using the literal px values above.
+The base font size is one of `14`, `16`, `18` (`SKILL.md` Phase 2c). For a base other than `16`, scale every step (`multiplier × base`) and round to the **nearest even integer**; an exact tie (e.g. `21` → `20` or `22`) rounds **up**. The resulting scales — body `xs`…`xl` / headline `xs`…`2xl`:
+
+| Base | Body `xs` → `xl` | Headline `xs` → `2xl` |
+|---|---|---|
+| `14` | `10, 12, 14, 16, 18` *(floored — see below)* | `16, 18, 22, 24, 28, 36` |
+| `16` | `10, 12, 14, 16, 18` | `18, 20, 24, 28, 32, 40` |
+| `18` | `12, 14, 16, 18, 20` | `20, 22, 28, 32, 36, 46` |
+
+**Minimum size — `10px`.** No type size goes below `10px`; at a smaller size text is no longer reliably readable on a phone. Base `14` is the only base the floor affects: its raw body row (`8, 10, 12, 14, 16`) would put `body-xs` at `8px`, so the whole body row moves up one step to `10, 12, 14, 16, 18` — the same as base `16` — which keeps every step distinct. At base `14`, `body-lg` is therefore `16px`, not the base size; the headline row is unaffected. Use this table as written; don't re-derive the base `14` body row.
+
+Only these three bases are offered: other values can give an odd base or two steps that round to the same size (base `12` makes body `sm` and `md` both `10`).
 
 ## Tier 1 — `typography.global` (decomposed by property, never pre-bundled)
 
@@ -71,8 +81,8 @@ The heaviest weight in play always lands on the top name in use, and the lightes
 
 * **`display` is removed entirely.**
 * **`headline`** — anchored T-shirt scale, 6 steps: `xs` (18px, smallest) → `sm` (20px) → `md` (24px) → `lg` (28px) → `xl` (32px) → `2xl` (40px, largest).
-* **`body`** — anchored T-shirt scale, 5 steps: `xs` (10px, smallest) → `sm` (12px) → `md` (14px) → `lg` (16px, = the base font size) → `xl` (18px, largest).
-* **`title` and `label` are removed** (per explicit user decision) — any component that previously used a `title-*` or `label-*` style should reference the nearest `headline-*` or `body-*` step instead (see the component-mapping notes in `SKILL.md` Phase 6 / the color reference's Tier 3 rule).
+* **`body`** — anchored T-shirt scale, 5 steps: `xs` (10px, smallest) → `sm` (12px) → `md` (14px) → `lg` (16px, = the base font size at base `16`) → `xl` (18px, largest).
+* **`title` and `label` are removed** (per explicit user decision) — any design that previously used a `title-*` or `label-*` style should reference the nearest `headline-*` or `body-*` step instead.
 * **Weight variants:** every one of the 11 size steps above comes in one variant per semantic weight level in play. On a default run that's exactly two — `default` (global `400`) and `strong` (global `700`). Final token name: `[family]-[tshirt]-[weight-level]`, e.g. `headline-xs-default`, `headline-xs-strong`, `body-lg-default`, `body-lg-strong`. That's `(6 + 5) × 2 = 22` total `typography.semantic` tokens on a default run; a system with N weight levels has `11 × N`.
 * Each token: `$type: "typography"`, `$value` an object whose every property (`fontFamily`/`fontSize`/`fontWeight`/`lineHeight`/`letterSpacing`) is an alias string into `typography.global` — never a bare number or px/em string:
   ```jsonc

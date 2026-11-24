@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test ver 3.1.0 — Design Token Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sans: "Noto Sans Thai", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --ink: #1c2027; --ink-2: #59606c; --ink-3: #8a909a; --line: #e6e8ec; --bg: #f7f8fa; --paper: #fff; --accent: #066AFF;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: var(--sans); color: var(--ink); background: var(--bg); font-size: 15px; line-height: 1.55; }
+  header { position: sticky; top: 0; z-index: 20; background: var(--paper); border-bottom: 1px solid var(--line); padding: 14px 28px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+  header h1 { margin: 0; font-size: 18px; font-weight: 700; }
+  header .meta { color: var(--ink-2); font-size: 13px; }
+  .layout { display: flex; align-items: flex-start; }
+  #sidebar { position: sticky; top: var(--header-h, 0px); height: calc(100vh - var(--header-h, 0px)); width: 200px; flex: none; padding: 20px 12px; border-right: 1px solid var(--line); background: var(--paper); overflow-y: auto; }
+  #sidebar a { display: block; padding: 7px 12px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px; }
+  #sidebar a:hover { background: var(--bg); color: var(--ink); }
+  #sidebar a.active { background: #e8f0ff; color: var(--accent); font-weight: 700; }
+  main#app { flex: 1; min-width: 0; padding: 28px 36px; padding-bottom: max(120px, 100vh); }
+  section.block { margin-bottom: 56px; }
+  section.block > h2 { font-size: 22px; margin: 0 0 16px; scroll-margin-top: calc(var(--header-h, 0px) + 12px); }
+  h3 { font-size: 15px; margin: 24px 0 10px; color: var(--ink); }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+  .tab { border: 0; background: none; padding: 8px 14px; font: inherit; font-size: 14px; color: var(--ink-2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+  .panel[hidden] { display: none; }
+  .strip { margin-bottom: 20px; }
+  .strip-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; text-transform: capitalize; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+  .sw { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--paper); }
+  .sw .chip { height: 52px; }
+  .sw .lbl { padding: 5px 7px; font-family: var(--mono); font-size: 10.5px; line-height: 1.4; color: var(--ink-2); word-break: break-all; }
+  .sw .lbl b { color: var(--ink); font-weight: 600; display: block; }
+  .checker { background-image: linear-gradient(45deg,#ddd 25%,transparent 25%),linear-gradient(-45deg,#ddd 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ddd 75%),linear-gradient(-45deg,transparent 75%,#ddd 75%); background-size: 12px 12px; background-position: 0 0,0 6px,6px -6px,-6px 0; }
+  table.sem-table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+  .sem-table th { text-align: left; font-size: 12px; color: var(--ink-3); font-weight: 700; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #fafbfc; }
+  .sem-table td { padding: 7px 12px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+  .sem-table tr:last-child td { border-bottom: 0; }
+  .sem-table td.name { font-family: var(--mono); font-size: 12.5px; width: 32%; }
+  .val { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; }
+  .val .dot { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(0,0,0,.08); flex: none; }
+  .val .alias { color: var(--ink-2); }
+  .val .hex { color: var(--ink); font-weight: 600; }
+  .type-row { display: flex; gap: 20px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .type-meta { width: 230px; flex: none; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); line-height: 1.5; }
+  .type-meta b { color: var(--ink); display: block; font-size: 12.5px; }
+  .type-sample { min-width: 0; overflow-wrap: anywhere; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .pill { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+  .pill.on { border-color: var(--accent); background: #e8f0ff; color: var(--accent); font-weight: 700; }
+  .readout { font-family: var(--mono); font-size: 13px; color: var(--ink-2); margin-bottom: 12px; }
+  .gap-demo { display: flex; flex-wrap: wrap; background: var(--paper); border: 1px dashed #c9ced6; border-radius: 10px; padding: 16px; transition: gap .15s; }
+  .gap-demo span { width: 56px; height: 56px; border-radius: 8px; background: #cfe0ff; border: 1px solid #9fbfff; }
+  .sim-stage { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 28px; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+  .sim-box { background: #cfe0ff; border: 1px solid #9fbfff; transition: all .15s; }
+  .vlist { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; }
+  .vlist-row { display: flex; align-items: center; gap: 20px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .vlist-row:last-child { border-bottom: 0; }
+  .vlist-demo { width: 120px; height: 72px; flex: none; border-radius: 10px; background: var(--paper); display: flex; align-items: center; justify-content: center; }
+  .vlist-text { text-align: left; }
+  .vlist-name { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+  .vlist-val { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  @media (max-width: 760px) { #sidebar { display: none; } main#app { padding: 20px; } .type-row { flex-direction: column; gap: 6px; } .type-meta { width: auto; } }
+</style>
+</head>
+<body>
+<header><h1>Test ver 3.1.0</h1><span class="meta">Design token preview · W3C DTCG · global → semantic · Mobile (pt / dp)</span></header>
+<div class="layout">
+  <nav id="sidebar">
+    <a href="#color">Color</a>
+    <a href="#typography">Typography</a>
+    <a href="#spacing">Spacing</a>
+    <a href="#radius">Radius</a>
+    <a href="#elevation">Elevation</a>
+    <a href="#border">Border</a>
+    <a href="#focus-ring">Focus ring</a>
+  </nav>
+  <main id="app">
+    <section class="block"><h2 id="color">Color</h2>
+      <div class="tabs" data-group="color"><button class="tab on" data-panel="color-global">Global</button><button class="tab" data-panel="color-semantic">Semantic</button></div>
+      <div class="panel" id="color-global"></div>
+      <div class="panel" id="color-semantic" hidden></div>
+    </section>
+    <section class="block"><h2 id="typography">Typography</h2>
+      <div class="tabs" data-group="type" id="type-tabs"></div>
+      <div id="type-panels"></div>
+    </section>
+    <section class="block"><h2 id="spacing">Spacing</h2>
+      <div class="pill-row" id="sp-pills"></div><div class="readout" id="sp-read"></div>
+      <div class="gap-demo" id="sp-demo"></div>
+    </section>
+    <section class="block"><h2 id="radius">Radius</h2>
+      <div class="pill-row" id="rd-pills"></div><div class="readout" id="rd-read"></div>
+      <div class="sim-stage"><div class="sim-box" id="rd-box"></div></div>
+    </section>
+    <section class="block"><h2 id="elevation">Elevation</h2><div class="vlist" id="el-list"></div></section>
+    <section class="block"><h2 id="border">Border</h2><div class="vlist" id="bw-list"></div></section>
+    <section class="block"><h2 id="focus-ring">Focus ring</h2><div class="vlist" id="fr-list"></div></section>
+  </main>
+</div>
+<script>
+const T = JSON.parse("{\"color\": {\"global\": {\"primary-50\": {\"$value\": \"#F0F6FF\", \"$type\": \"color\"}, \"primary-100\": {\"$value\": \"#E0EDFF\", \"$type\": \"color\"}, \"primary-200\": {\"$value\": \"#B8D4FF\", \"$type\": \"color\"}, \"primary-300\": {\"$value\": \"#85B6FF\", \"$type\": \"color\"}, \"primary-400\": {\"$value\": \"#4791FF\", \"$type\": \"color\"}, \"primary-500\": {\"$value\": \"#066AFF\", \"$type\": \"color\"}, \"primary-600\": {\"$value\": \"#0052CC\", \"$type\": \"color\"}, \"primary-700\": {\"$value\": \"#0042A3\", \"$type\": \"color\"}, \"primary-800\": {\"$value\": \"#00317A\", \"$type\": \"color\"}, \"primary-900\": {\"$value\": \"#002152\", \"$type\": \"color\"}, \"primary-950\": {\"$value\": \"#001433\", \"$type\": \"color\"}, \"secondary-50\": {\"$value\": \"#F2FDFC\", \"$type\": \"color\"}, \"secondary-100\": {\"$value\": \"#E4FBF9\", \"$type\": \"color\"}, \"secondary-200\": {\"$value\": \"#C1F6F0\", \"$type\": \"color\"}, \"secondary-300\": {\"$value\": \"#95EFE6\", \"$type\": \"color\"}, \"secondary-400\": {\"$value\": \"#5FE7D9\", \"$type\": \"color\"}, \"secondary-500\": {\"$value\": \"#21DECA\", \"$type\": \"color\"}, \"secondary-600\": {\"$value\": \"#18A092\", \"$type\": \"color\"}, \"secondary-700\": {\"$value\": \"#158E81\", \"$type\": \"color\"}, \"secondary-800\": {\"$value\": \"#106A61\", \"$type\": \"color\"}, \"secondary-900\": {\"$value\": \"#0B4741\", \"$type\": \"color\"}, \"secondary-950\": {\"$value\": \"#072C28\", \"$type\": \"color\"}, \"neutral-50\": {\"$value\": \"#F6F7F8\", \"$type\": \"color\"}, \"neutral-100\": {\"$value\": \"#EEEFF2\", \"$type\": \"color\"}, \"neutral-200\": {\"$value\": \"#D7DAE0\", \"$type\": \"color\"}, \"neutral-300\": {\"$value\": \"#BAC0C9\", \"$type\": \"color\"}, \"neutral-400\": {\"$value\": \"#98A1AE\", \"$type\": \"color\"}, \"neutral-500\": {\"$value\": \"#677283\", \"$type\": \"color\"}, \"neutral-600\": {\"$value\": \"#5A6372\", \"$type\": \"color\"}, \"neutral-700\": {\"$value\": \"#48505B\", \"$type\": \"color\"}, \"neutral-800\": {\"$value\": \"#363C45\", \"$type\": \"color\"}, \"neutral-900\": {\"$value\": \"#24282E\", \"$type\": \"color\"}, \"neutral-950\": {\"$value\": \"#16191D\", \"$type\": \"color\"}, \"success-50\": {\"$value\": \"#F3FCF6\", \"$type\": \"color\"}, \"success-100\": {\"$value\": \"#E7F9ED\", \"$type\": \"color\"}, \"success-200\": {\"$value\": \"#C6F1D5\", \"$type\": \"color\"}, \"success-300\": {\"$value\": \"#9DE6B7\", \"$type\": \"color\"}, \"success-400\": {\"$value\": \"#6CDA93\", \"$type\": \"color\"}, \"success-500\": {\"$value\": \"#33CC69\", \"$type\": \"color\"}, \"success-600\": {\"$value\": \"#2CAF5A\", \"$type\": \"color\"}, \"success-700\": {\"$value\": \"#218243\", \"$type\": \"color\"}, \"success-800\": {\"$value\": \"#196232\", \"$type\": \"color\"}, \"success-900\": {\"$value\": \"#104122\", \"$type\": \"color\"}, \"success-950\": {\"$value\": \"#0A2915\", \"$type\": \"color\"}, \"warning-50\": {\"$value\": \"#FEF9F0\", \"$type\": \"color\"}, \"warning-100\": {\"$value\": \"#FEF3E1\", \"$type\": \"color\"}, \"warning-200\": {\"$value\": \"#FCE4BA\", \"$type\": \"color\"}, \"warning-300\": {\"$value\": \"#FBD189\", \"$type\": \"color\"}, \"warning-400\": {\"$value\": \"#F9BA4E\", \"$type\": \"color\"}, \"warning-500\": {\"$value\": \"#F69F09\", \"$type\": \"color\"}, \"warning-600\": {\"$value\": \"#C57F07\", \"$type\": \"color\"}, \"warning-700\": {\"$value\": \"#9D6606\", \"$type\": \"color\"}, \"warning-800\": {\"$value\": \"#764C04\", \"$type\": \"color\"}, \"warning-900\": {\"$value\": \"#4F3303\", \"$type\": \"color\"}, \"warning-950\": {\"$value\": \"#312002\", \"$type\": \"color\"}, \"error-50\": {\"$value\": \"#FEF1F2\", \"$type\": \"color\"}, \"error-100\": {\"$value\": \"#FCE3E5\", \"$type\": \"color\"}, \"error-200\": {\"$value\": \"#F9BEC2\", \"$type\": \"color\"}, \"error-300\": {\"$value\": \"#F49097\", \"$type\": \"color\"}, \"error-400\": {\"$value\": \"#EF5862\", \"$type\": \"color\"}, \"error-500\": {\"$value\": \"#E9202E\", \"$type\": \"color\"}, \"error-600\": {\"$value\": \"#BA121E\", \"$type\": \"color\"}, \"error-700\": {\"$value\": \"#950F18\", \"$type\": \"color\"}, \"error-800\": {\"$value\": \"#6F0B12\", \"$type\": \"color\"}, \"error-900\": {\"$value\": \"#4A070C\", \"$type\": \"color\"}, \"error-950\": {\"$value\": \"#2E0507\", \"$type\": \"color\"}, \"info-50\": {\"$value\": \"#F2FBFC\", \"$type\": \"color\"}, \"info-100\": {\"$value\": \"#E6F8FA\", \"$type\": \"color\"}, \"info-200\": {\"$value\": \"#C4EEF3\", \"$type\": \"color\"}, \"info-300\": {\"$value\": \"#9AE2EA\", \"$type\": \"color\"}, \"info-400\": {\"$value\": \"#67D4E0\", \"$type\": \"color\"}, \"info-500\": {\"$value\": \"#2ABBCB\", \"$type\": \"color\"}, \"info-600\": {\"$value\": \"#239CA9\", \"$type\": \"color\"}, \"info-700\": {\"$value\": \"#1C7D87\", \"$type\": \"color\"}, \"info-800\": {\"$value\": \"#155D65\", \"$type\": \"color\"}, \"info-900\": {\"$value\": \"#0E3E44\", \"$type\": \"color\"}, \"info-950\": {\"$value\": \"#09272A\", \"$type\": \"color\"}, \"white\": {\"$value\": \"#FFFFFF\", \"$type\": \"color\"}, \"black\": {\"$value\": \"#000000\", \"$type\": \"color\"}, \"black-alpha-0\": {\"$value\": \"rgba(0, 0, 0, 0.00)\", \"$type\": \"color\"}, \"black-alpha-5\": {\"$value\": \"rgba(0, 0, 0, 0.05)\", \"$type\": \"color\"}, \"black-alpha-10\": {\"$value\": \"rgba(0, 0, 0, 0.10)\", \"$type\": \"color\"}, \"black-alpha-20\": {\"$value\": \"rgba(0, 0, 0, 0.20)\", \"$type\": \"color\"}, \"black-alpha-30\": {\"$value\": \"rgba(0, 0, 0, 0.30)\", \"$type\": \"color\"}, \"black-alpha-40\": {\"$value\": \"rgba(0, 0, 0, 0.40)\", \"$type\": \"color\"}, \"black-alpha-50\": {\"$value\": \"rgba(0, 0, 0, 0.50)\", \"$type\": \"color\"}, \"black-alpha-60\": {\"$value\": \"rgba(0, 0, 0, 0.60)\", \"$type\": \"color\"}, \"black-alpha-70\": {\"$value\": \"rgba(0, 0, 0, 0.70)\", \"$type\": \"color\"}, \"black-alpha-80\": {\"$value\": \"rgba(0, 0, 0, 0.80)\", \"$type\": \"color\"}, \"black-alpha-90\": {\"$value\": \"rgba(0, 0, 0, 0.90)\", \"$type\": \"color\"}, \"black-alpha-100\": {\"$value\": \"rgba(0, 0, 0, 1.00)\", \"$type\": \"color\"}, \"white-alpha-0\": {\"$value\": \"rgba(255, 255, 255, 0.00)\", \"$type\": \"color\"}, \"white-alpha-5\": {\"$value\": \"rgba(255, 255, 255, 0.05)\", \"$type\": \"color\"}, \"white-alpha-10\": {\"$value\": \"rgba(255, 255, 255, 0.10)\", \"$type\": \"color\"}, \"white-alpha-20\": {\"$value\": \"rgba(255, 255, 255, 0.20)\", \"$type\": \"color\"}, \"white-alpha-30\": {\"$value\": \"rgba(255, 255, 255, 0.30)\", \"$type\": \"color\"}, \"white-alpha-40\": {\"$value\": \"rgba(255, 255, 255, 0.40)\", \"$type\": \"color\"}, \"white-alpha-50\": {\"$value\": \"rgba(255, 255, 255, 0.50)\", \"$type\": \"color\"}, \"white-alpha-60\": {\"$value\": \"rgba(255, 255, 255, 0.60)\", \"$type\": \"color\"}, \"white-alpha-70\": {\"$value\": \"rgba(255, 255, 255, 0.70)\", \"$type\": \"color\"}, \"white-alpha-80\": {\"$value\": \"rgba(255, 255, 255, 0.80)\", \"$type\": \"color\"}, \"white-alpha-90\": {\"$value\": \"rgba(255, 255, 255, 0.90)\", \"$type\": \"color\"}, \"white-alpha-100\": {\"$value\": \"rgba(255, 255, 255, 1.00)\", \"$type\": \"color\"}}, \"semantic\": {\"background\": {\"base-plain\": {\"$value\": \"{color.global.white}\", \"$type\": \"color\"}, \"base-primary\": {\"$value\": \"{color.global.neutral-50}\", \"$type\": \"color\"}, \"base-secondary\": {\"$value\": \"{color.global.neutral-100}\", \"$type\": \"color\"}, \"base-tertiary\": {\"$value\": \"{color.global.neutral-200}\", \"$type\": \"color\"}, \"base-quaternary\": {\"$value\": \"{color.global.neutral-300}\", \"$type\": \"color\"}, \"base-solid\": {\"$value\": \"{color.global.neutral-500}\", \"$type\": \"color\"}, \"brand-primary\": {\"$value\": \"{color.global.primary-50}\", \"$type\": \"color\"}, \"brand-secondary\": {\"$value\": \"{color.global.primary-100}\", \"$type\": \"color\"}, \"brand-tertiary\": {\"$value\": \"{color.global.primary-200}\", \"$type\": \"color\"}, \"brand-quaternary\": {\"$value\": \"{color.global.primary-300}\", \"$type\": \"color\"}, \"brand-solid\": {\"$value\": \"{color.global.primary-500}\", \"$type\": \"color\"}, \"brand_secondary-primary\": {\"$value\": \"{color.global.secondary-50}\", \"$type\": \"color\"}, \"brand_secondary-secondary\": {\"$value\": \"{color.global.secondary-100}\", \"$type\": \"color\"}, \"brand_secondary-tertiary\": {\"$value\": \"{color.global.secondary-200}\", \"$type\": \"color\"}, \"brand_secondary-quaternary\": {\"$value\": \"{color.global.secondary-300}\", \"$type\": \"color\"}, \"brand_secondary-solid\": {\"$value\": \"{color.global.secondary-500}\", \"$type\": \"color\"}, \"error-primary\": {\"$value\": \"{color.global.error-50}\", \"$type\": \"color\"}, \"error-secondary\": {\"$value\": \"{color.global.error-100}\", \"$type\": \"color\"}, \"error-solid\": {\"$value\": \"{color.global.error-600}\", \"$type\": \"color\"}, \"warning-primary\": {\"$value\": \"{color.global.warning-50}\", \"$type\": \"color\"}, \"warning-secondary\": {\"$value\": \"{color.global.warning-100}\", \"$type\": \"color\"}, \"warning-solid\": {\"$value\": \"{color.global.warning-700}\", \"$type\": \"color\"}, \"success-primary\": {\"$value\": \"{color.global.success-50}\", \"$type\": \"color\"}, \"success-secondary\": {\"$value\": \"{color.global.success-100}\", \"$type\": \"color\"}, \"success-solid\": {\"$value\": \"{color.global.success-700}\", \"$type\": \"color\"}, \"info-primary\": {\"$value\": \"{color.global.info-50}\", \"$type\": \"color\"}, \"info-secondary\": {\"$value\": \"{color.global.info-100}\", \"$type\": \"color\"}, \"info-solid\": {\"$value\": \"{color.global.info-700}\", \"$type\": \"color\"}, \"placeholder\": {\"$value\": \"{color.global.neutral-100}\", \"$type\": \"color\"}, \"white\": {\"$value\": \"{color.global.white}\", \"$type\": \"color\"}, \"disabled-primary\": {\"$value\": \"{color.global.neutral-100}\", \"$type\": \"color\"}, \"disabled-secondary\": {\"$value\": \"{color.global.neutral-200}\", \"$type\": \"color\"}}, \"content\": {\"base-primary\": {\"$value\": \"{color.global.neutral-700}\", \"$type\": \"color\"}, \"base-secondary\": {\"$value\": \"{color.global.neutral-600}\", \"$type\": \"color\"}, \"base-tertiary\": {\"$value\": \"{color.global.neutral-500}\", \"$type\": \"color\"}, \"base-quaternary\": {\"$value\": \"{color.global.neutral-400}\", \"$type\": \"color\"}, \"brand-primary\": {\"$value\": \"{color.global.primary-600}\", \"$type\": \"color\"}, \"brand-secondary\": {\"$value\": \"{color.global.primary-700}\", \"$type\": \"color\"}, \"brand-tertiary\": {\"$value\": \"{color.global.primary-500}\", \"$type\": \"color\"}, \"brand-quaternary\": {\"$value\": \"{color.global.primary-400}\", \"$type\": \"color\"}, \"brand_secondary-primary\": {\"$value\": \"{color.global.secondary-600}\", \"$type\": \"color\"}, \"brand_secondary-secondary\": {\"$value\": \"{color.global.secondary-700}\", \"$type\": \"color\"}, \"brand_secondary-tertiary\": {\"$value\": \"{color.global.secondary-500}\", \"$type\": \"color\"}, \"brand_secondary-quaternary\": {\"$value\": \"{color.global.secondary-400}\", \"$type\": \"color\"}, \"error-primary\": {\"$value\": \"{color.global.error-600}\", \"$type\": \"color\"}, \"error-secondary\": {\"$value\": \"{color.global.error-500}\", \"$type\": \"color\"}, \"warning-primary\": {\"$value\": \"{color.global.warning-700}\", \"$type\": \"color\"}, \"warning-secondary\": {\"$value\": \"{color.global.warning-600}\", \"$type\": \"color\"}, \"success-primary\": {\"$value\": \"{color.global.success-700}\", \"$type\": \"color\"}, \"success-secondary\": {\"$value\": \"{color.global.success-600}\", \"$type\": \"color\"}, \"info-primary\": {\"$value\": \"{color.global.info-700}\", \"$type\": \"color\"}, \"info-secondary\": {\"$value\": \"{color.global.info-600}\", \"$type\": \"color\"}, \"placeholder\": {\"$value\": \"{color.global.neutral-500}\", \"$type\": \"color\"}, \"white\": {\"$value\": \"{color.global.white}\", \"$type\": \"color\"}, \"disabled-primary\": {\"$value\": \"{color.global.neutral-500}\", \"$type\": \"color\"}, \"disabled-secondary\": {\"$value\": \"{color.global.neutral-400}\", \"$type\": \"color\"}}, \"border\": {\"base-primary\": {\"$value\": \"{color.global.neutral-500}\", \"$type\": \"color\"}, \"base-secondary\": {\"$value\": \"{color.global.neutral-300}\", \"$type\": \"color\"}, \"brand-primary\": {\"$value\": \"{color.global.primary-500}\", \"$type\": \"color\"}, \"brand-secondary\": {\"$value\": \"{color.global.primary-300}\", \"$type\": \"color\"}, \"error-primary\": {\"$value\": \"{color.global.error-400}\", \"$type\": \"color\"}, \"error-secondary\": {\"$value\": \"{color.global.error-200}\", \"$type\": \"color\"}, \"warning-primary\": {\"$value\": \"{color.global.warning-600}\", \"$type\": \"color\"}, \"warning-secondary\": {\"$value\": \"{color.global.warning-400}\", \"$type\": \"color\"}, \"success-primary\": {\"$value\": \"{color.global.success-700}\", \"$type\": \"color\"}, \"success-secondary\": {\"$value\": \"{color.global.success-500}\", \"$type\": \"color\"}, \"info-primary\": {\"$value\": \"{color.global.info-600}\", \"$type\": \"color\"}, \"info-secondary\": {\"$value\": \"{color.global.info-400}\", \"$type\": \"color\"}, \"white\": {\"$value\": \"{color.global.white}\", \"$type\": \"color\"}, \"disabled-primary\": {\"$value\": \"{color.global.neutral-300}\", \"$type\": \"color\"}, \"disabled-secondary\": {\"$value\": \"{color.global.neutral-200}\", \"$type\": \"color\"}}, \"focus_ring\": {\"brand-primary\": {\"$value\": \"{color.global.primary-600}\", \"$type\": \"color\"}, \"brand-secondary\": {\"$value\": \"{color.global.primary-700}\", \"$type\": \"color\"}, \"error-primary\": {\"$value\": \"{color.global.error-400}\", \"$type\": \"color\"}, \"error-secondary\": {\"$value\": \"{color.global.error-400}\", \"$type\": \"color\"}}, \"overlay\": {\"primary\": {\"$value\": \"{color.global.black-alpha-50}\", \"$type\": \"color\"}}}}, \"typography\": {\"global\": {\"font-family-noto-sans-thai\": {\"$value\": \"Noto Sans Thai\", \"$type\": \"fontFamily\"}, \"font-size-10\": {\"$value\": \"10px\", \"$type\": \"dimension\"}, \"font-size-12\": {\"$value\": \"12px\", \"$type\": \"dimension\"}, \"font-size-14\": {\"$value\": \"14px\", \"$type\": \"dimension\"}, \"font-size-16\": {\"$value\": \"16px\", \"$type\": \"dimension\"}, \"font-size-18\": {\"$value\": \"18px\", \"$type\": \"dimension\"}, \"font-size-20\": {\"$value\": \"20px\", \"$type\": \"dimension\"}, \"font-size-24\": {\"$value\": \"24px\", \"$type\": \"dimension\"}, \"font-size-28\": {\"$value\": \"28px\", \"$type\": \"dimension\"}, \"font-size-32\": {\"$value\": \"32px\", \"$type\": \"dimension\"}, \"font-size-40\": {\"$value\": \"40px\", \"$type\": \"dimension\"}, \"font-weight-400\": {\"$value\": 400, \"$type\": \"fontWeight\"}, \"font-weight-700\": {\"$value\": 700, \"$type\": \"fontWeight\"}, \"line-height-115\": {\"$value\": 1.15, \"$type\": \"number\"}, \"line-height-120\": {\"$value\": 1.2, \"$type\": \"number\"}, \"line-height-125\": {\"$value\": 1.25, \"$type\": \"number\"}, \"line-height-130\": {\"$value\": 1.3, \"$type\": \"number\"}, \"line-height-140\": {\"$value\": 1.4, \"$type\": \"number\"}, \"line-height-150\": {\"$value\": 1.5, \"$type\": \"number\"}, \"letter-spacing-neg-20\": {\"$value\": \"-0.02em\", \"$type\": \"dimension\"}, \"letter-spacing-neg-10\": {\"$value\": \"-0.01em\", \"$type\": \"dimension\"}, \"letter-spacing-0\": {\"$value\": \"0em\", \"$type\": \"dimension\"}, \"letter-spacing-10\": {\"$value\": \"0.01em\", \"$type\": \"dimension\"}, \"letter-spacing-20\": {\"$value\": \"0.02em\", \"$type\": \"dimension\"}}, \"semantic\": {\"headline-xs-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-18}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-130}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-xs-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-18}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-130}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-sm-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-20}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-130}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-sm-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-20}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-130}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-md-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-24}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-125}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-md-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-24}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-125}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-lg-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-28}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-125}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-lg-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-28}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-125}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"headline-xl-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-32}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-120}\", \"letterSpacing\": \"{typography.global.letter-spacing-neg-10}\"}}, \"headline-xl-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-32}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-120}\", \"letterSpacing\": \"{typography.global.letter-spacing-neg-10}\"}}, \"headline-2xl-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-40}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-115}\", \"letterSpacing\": \"{typography.global.letter-spacing-neg-20}\"}}, \"headline-2xl-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-40}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-115}\", \"letterSpacing\": \"{typography.global.letter-spacing-neg-20}\"}}, \"body-xs-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-10}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-140}\", \"letterSpacing\": \"{typography.global.letter-spacing-20}\"}}, \"body-xs-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-10}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-140}\", \"letterSpacing\": \"{typography.global.letter-spacing-20}\"}}, \"body-sm-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-12}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-140}\", \"letterSpacing\": \"{typography.global.letter-spacing-10}\"}}, \"body-sm-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-12}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-140}\", \"letterSpacing\": \"{typography.global.letter-spacing-10}\"}}, \"body-md-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-14}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-150}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"body-md-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-14}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-150}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"body-lg-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-16}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-150}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"body-lg-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-16}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-150}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"body-xl-default\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-18}\", \"fontWeight\": \"{typography.global.font-weight-400}\", \"lineHeight\": \"{typography.global.line-height-150}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}, \"body-xl-strong\": {\"$type\": \"typography\", \"$value\": {\"fontFamily\": \"{typography.global.font-family-noto-sans-thai}\", \"fontSize\": \"{typography.global.font-size-18}\", \"fontWeight\": \"{typography.global.font-weight-700}\", \"lineHeight\": \"{typography.global.line-height-150}\", \"letterSpacing\": \"{typography.global.letter-spacing-0}\"}}}}, \"spacing\": {\"global\": {\"space-0\": {\"$value\": \"0px\", \"$type\": \"dimension\"}, \"space-2\": {\"$value\": \"2px\", \"$type\": \"dimension\"}, \"space-4\": {\"$value\": \"4px\", \"$type\": \"dimension\"}, \"space-8\": {\"$value\": \"8px\", \"$type\": \"dimension\"}, \"space-12\": {\"$value\": \"12px\", \"$type\": \"dimension\"}, \"space-16\": {\"$value\": \"16px\", \"$type\": \"dimension\"}, \"space-20\": {\"$value\": \"20px\", \"$type\": \"dimension\"}, \"space-24\": {\"$value\": \"24px\", \"$type\": \"dimension\"}, \"space-32\": {\"$value\": \"32px\", \"$type\": \"dimension\"}, \"space-40\": {\"$value\": \"40px\", \"$type\": \"dimension\"}, \"space-48\": {\"$value\": \"48px\", \"$type\": \"dimension\"}, \"space-56\": {\"$value\": \"56px\", \"$type\": \"dimension\"}, \"space-64\": {\"$value\": \"64px\", \"$type\": \"dimension\"}, \"space-80\": {\"$value\": \"80px\", \"$type\": \"dimension\"}, \"space-96\": {\"$value\": \"96px\", \"$type\": \"dimension\"}, \"space-112\": {\"$value\": \"112px\", \"$type\": \"dimension\"}, \"space-128\": {\"$value\": \"128px\", \"$type\": \"dimension\"}}, \"semantic\": {\"none\": {\"$value\": \"{spacing.global.space-0}\", \"$type\": \"dimension\"}, \"xs\": {\"$value\": \"{spacing.global.space-2}\", \"$type\": \"dimension\"}, \"sm\": {\"$value\": \"{spacing.global.space-4}\", \"$type\": \"dimension\"}, \"md\": {\"$value\": \"{spacing.global.space-8}\", \"$type\": \"dimension\"}, \"lg\": {\"$value\": \"{spacing.global.space-12}\", \"$type\": \"dimension\"}, \"xl\": {\"$value\": \"{spacing.global.space-16}\", \"$type\": \"dimension\"}, \"2xl\": {\"$value\": \"{spacing.global.space-20}\", \"$type\": \"dimension\"}, \"3xl\": {\"$value\": \"{spacing.global.space-24}\", \"$type\": \"dimension\"}, \"4xl\": {\"$value\": \"{spacing.global.space-32}\", \"$type\": \"dimension\"}, \"5xl\": {\"$value\": \"{spacing.global.space-40}\", \"$type\": \"dimension\"}, \"6xl\": {\"$value\": \"{spacing.global.space-48}\", \"$type\": \"dimension\"}, \"7xl\": {\"$value\": \"{spacing.global.space-64}\", \"$type\": \"dimension\"}}}, \"radius\": {\"global\": {\"radius-0\": {\"$value\": \"0px\", \"$type\": \"dimension\"}, \"radius-2\": {\"$value\": \"2px\", \"$type\": \"dimension\"}, \"radius-4\": {\"$value\": \"4px\", \"$type\": \"dimension\"}, \"radius-8\": {\"$value\": \"8px\", \"$type\": \"dimension\"}, \"radius-10\": {\"$value\": \"10px\", \"$type\": \"dimension\"}, \"radius-12\": {\"$value\": \"12px\", \"$type\": \"dimension\"}, \"radius-16\": {\"$value\": \"16px\", \"$type\": \"dimension\"}, \"radius-20\": {\"$value\": \"20px\", \"$type\": \"dimension\"}, \"radius-24\": {\"$value\": \"24px\", \"$type\": \"dimension\"}, \"radius-32\": {\"$value\": \"32px\", \"$type\": \"dimension\"}, \"radius-40\": {\"$value\": \"40px\", \"$type\": \"dimension\"}, \"radius-999\": {\"$value\": \"999px\", \"$type\": \"dimension\"}}, \"semantic\": {\"none\": {\"$value\": \"{radius.global.radius-0}\", \"$type\": \"dimension\"}, \"xs\": {\"$value\": \"{radius.global.radius-2}\", \"$type\": \"dimension\"}, \"sm\": {\"$value\": \"{radius.global.radius-4}\", \"$type\": \"dimension\"}, \"md\": {\"$value\": \"{radius.global.radius-8}\", \"$type\": \"dimension\"}, \"lg\": {\"$value\": \"{radius.global.radius-10}\", \"$type\": \"dimension\"}, \"xl\": {\"$value\": \"{radius.global.radius-12}\", \"$type\": \"dimension\"}, \"2xl\": {\"$value\": \"{radius.global.radius-16}\", \"$type\": \"dimension\"}, \"3xl\": {\"$value\": \"{radius.global.radius-20}\", \"$type\": \"dimension\"}, \"4xl\": {\"$value\": \"{radius.global.radius-24}\", \"$type\": \"dimension\"}, \"5xl\": {\"$value\": \"{radius.global.radius-32}\", \"$type\": \"dimension\"}, \"6xl\": {\"$value\": \"{radius.global.radius-40}\", \"$type\": \"dimension\"}, \"full\": {\"$value\": \"{radius.global.radius-999}\", \"$type\": \"dimension\"}}}, \"border\": {\"global\": {\"border-0.5\": {\"$value\": \"0.5px\", \"$type\": \"dimension\"}, \"border-1\": {\"$value\": \"1px\", \"$type\": \"dimension\"}, \"border-2\": {\"$value\": \"2px\", \"$type\": \"dimension\"}, \"border-4\": {\"$value\": \"4px\", \"$type\": \"dimension\"}}, \"semantic\": {\"sm\": {\"$value\": \"{border.global.border-0.5}\", \"$type\": \"dimension\"}, \"md\": {\"$value\": \"{border.global.border-1}\", \"$type\": \"dimension\"}, \"lg\": {\"$value\": \"{border.global.border-2}\", \"$type\": \"dimension\"}, \"xl\": {\"$value\": \"{border.global.border-4}\", \"$type\": \"dimension\"}}}, \"elevation\": {\"global\": {\"shadow-none\": {\"$type\": \"shadow\", \"$value\": {\"color\": \"{color.global.black-alpha-0}\", \"offsetX\": \"0px\", \"offsetY\": \"0px\", \"blur\": \"0px\", \"spread\": \"0px\"}}, \"shadow-sm\": {\"$type\": \"shadow\", \"$value\": {\"color\": \"{color.global.black-alpha-10}\", \"offsetX\": \"0px\", \"offsetY\": \"1px\", \"blur\": \"2px\", \"spread\": \"0px\"}}, \"shadow-md\": {\"$type\": \"shadow\", \"$value\": {\"color\": \"{color.global.black-alpha-10}\", \"offsetX\": \"0px\", \"offsetY\": \"4px\", \"blur\": \"8px\", \"spread\": \"0px\"}}, \"shadow-lg\": {\"$type\": \"shadow\", \"$value\": {\"color\": \"{color.global.black-alpha-20}\", \"offsetX\": \"0px\", \"offsetY\": \"8px\", \"blur\": \"24px\", \"spread\": \"0px\"}}}, \"semantic\": {\"none\": {\"$type\": \"shadow\", \"$value\": \"{elevation.global.shadow-none}\"}, \"sm\": {\"$type\": \"shadow\", \"$value\": \"{elevation.global.shadow-sm}\"}, \"md\": {\"$type\": \"shadow\", \"$value\": \"{elevation.global.shadow-md}\"}, \"lg\": {\"$type\": \"shadow\", \"$value\": \"{elevation.global.shadow-lg}\"}}}}");
+
+function lookup(path) {
+  const parts = path.split('.');
+  let node = T, i = 0;
+  while (i < parts.length) {
+    let found = false;
+    for (let j = parts.length; j > i; j--) {
+      const key = parts.slice(i, j).join('.');
+      if (node && Object.prototype.hasOwnProperty.call(node, key)) { node = node[key]; i = j; found = true; break; }
+    }
+    if (!found) return null;
+  }
+  return node;
+}
+function resolve(val, d, depth) {
+  depth = depth || 0;
+  if (depth > 20) return null;
+  if (typeof val === 'string') {
+    const m = val.match(/^\{(.+)\}$/);
+    if (m) { const n = lookup(m[1]); return n ? resolve(n.$value, d, depth + 1) : null; }
+    return val;
+  }
+  if (val && typeof val === 'object') {
+    const out = Array.isArray(val) ? [] : {};
+    for (const k in val) out[k] = resolve(val[k], d, depth + 1);
+    return out;
+  }
+  return val;
+}
+const el = (tag, attrs, html) => { const e = document.createElement(tag); if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; };
+
+function syncHeaderHeight() { document.documentElement.style.setProperty('--header-h', document.querySelector('header').offsetHeight + 'px'); }
+window.addEventListener('resize', syncHeaderHeight); syncHeaderHeight();
+
+document.querySelectorAll('.tabs').forEach(bindTabs);
+function bindTabs(group) {
+  group.addEventListener('click', e => {
+    const b = e.target.closest('.tab'); if (!b) return;
+    group.querySelectorAll('.tab').forEach(t => { t.classList.toggle('on', t === b); const p = document.getElementById(t.dataset.panel); if (p) p.hidden = t !== b; });
+  });
+}
+
+/* ---- Color: Global ---- */
+(function renderGlobal() {
+  const g = T.color.global, fams = {}, order = [];
+  for (const k in g) {
+    const m = k.match(/^(.*?)-(\d+)$/);
+    const fam = m ? m[1] : 'base';
+    if (!fams[fam]) { fams[fam] = []; order.push(fam); }
+    fams[fam].push(k);
+  }
+  const host = document.getElementById('color-global');
+  order.forEach(fam => {
+    const s = el('div', { class: 'strip' });
+    s.appendChild(el('div', { class: 'strip-name' }, fam === 'base' ? 'Base (white / black)' : fam.replace(/-/g, ' ')));
+    const row = el('div', { class: 'swatches' });
+    fams[fam].forEach(k => {
+      const v = resolve(g[k].$value);
+      const alpha = /rgba/.test(v);
+      row.appendChild(el('div', { class: 'sw' }, `<div class="chip ${alpha ? 'checker' : ''}"><div style="height:100%;background:${v}"></div></div><div class="lbl"><b>${k}</b>${v}</div>`));
+    });
+    s.appendChild(row); host.appendChild(s);
+  });
+})();
+
+/* ---- Color: Semantic ---- */
+function renderSemanticTable() {
+  const sem = T.color.semantic, host = document.getElementById('color-semantic');
+  const EMPH = ['plain', 'primary', 'secondary', 'tertiary', 'quaternary', 'solid'];
+  for (const elName in sem) {
+    host.appendChild(el('h3', null, elName));
+    let keys = Object.keys(sem[elName]);
+    if (elName === 'background') {
+      const roleOf = k => k.replace(/-(plain|primary|secondary|tertiary|quaternary|solid)$/, '');
+      const empOf = k => { const m = k.match(/-(plain|primary|secondary|tertiary|quaternary|solid)$/); return m ? EMPH.indexOf(m[1]) : -1; };
+      const roles = []; keys.forEach(k => { const r = roleOf(k); if (!roles.includes(r)) roles.push(r); });
+      keys = roles.flatMap(r => keys.filter(k => roleOf(k) === r).sort((a, b) => empOf(a) - empOf(b)));
+    }
+    const t = el('table', { class: 'sem-table' });
+    t.appendChild(el('thead', null, '<tr><th>Name</th><th>Value</th><th>Description</th></tr>'));
+    const tb = el('tbody');
+    keys.forEach(k => {
+      const raw = sem[elName][k].$value, v = resolve(raw);
+      tb.appendChild(el('tr', null, `<td class="name">${k}</td><td><div class="val"><span class="dot" style="background:${v}"></span><span class="alias">${raw}</span><span class="hex">${v}</span></div></td><td>-</td>`));
+    });
+    t.appendChild(tb); host.appendChild(t);
+  }
+}
+renderSemanticTable();
+
+/* ---- Typography ---- */
+(function renderType() {
+  const sem = T.typography.semantic, LADDER = ['lightest', 'lighter', 'light', 'default', 'strong', 'stronger', 'strongest'];
+  const levels = LADDER.filter(l => Object.keys(sem).some(k => k.endsWith('-' + l)));
+  const SIZE = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'];
+  const rank = k => SIZE.indexOf(k.split('-')[1]);
+  const tabs = document.getElementById('type-tabs'), panels = document.getElementById('type-panels');
+  const sample = 'สวัสดีครับ ออกแบบระบบให้ใช้ง่าย The quick brown fox 0123';
+  levels.forEach((lvl, i) => {
+    tabs.appendChild(el('button', { class: 'tab' + (i === 0 ? ' on' : ''), 'data-panel': 'type-' + lvl }, lvl[0].toUpperCase() + lvl.slice(1)));
+    const p = el('div', { class: 'panel', id: 'type-' + lvl }); if (i) p.hidden = true;
+    ['headline', 'body'].forEach(fam => {
+      p.appendChild(el('h3', null, fam[0].toUpperCase() + fam.slice(1)));
+      Object.keys(sem).filter(k => k.startsWith(fam + '-') && k.endsWith('-' + lvl)).sort((a, b) => rank(b) - rank(a)).forEach(k => {
+        const v = resolve(sem[k].$value);
+        const row = el('div', { class: 'type-row' });
+        row.appendChild(el('div', { class: 'type-meta' }, `<b>${k}</b>weight ${v.fontWeight} · ${v.fontSize} / ${v.lineHeight} · ${v.letterSpacing}`));
+        const s = el('div', { class: 'type-sample' }, sample);
+        Object.assign(s.style, { fontFamily: `"${v.fontFamily}", ${getComputedStyle(document.documentElement).getPropertyValue('--sans')}`, fontSize: v.fontSize, fontWeight: v.fontWeight, lineHeight: v.lineHeight, letterSpacing: v.letterSpacing });
+        row.appendChild(s); p.appendChild(row);
+      });
+    });
+    panels.appendChild(p);
+  });
+  bindTabs(tabs);
+})();
+
+/* ---- Spacing / Radius simulators ---- */
+function pills(hostId, map, onPick, initial) {
+  const host = document.getElementById(hostId);
+  Object.keys(map).forEach(k => {
+    const b = el('button', { class: 'pill' + (k === initial ? ' on' : '') }, k);
+    b.addEventListener('click', () => { host.querySelectorAll('.pill').forEach(x => x.classList.toggle('on', x === b)); onPick(k); });
+    host.appendChild(b);
+  });
+  onPick(initial);
+}
+const spDemo = document.getElementById('sp-demo');
+for (let i = 0; i < 6; i++) spDemo.appendChild(el('span'));
+pills('sp-pills', T.spacing.semantic, k => {
+  const raw = T.spacing.semantic[k].$value, v = resolve(raw);
+  spDemo.style.gap = v; document.getElementById('sp-read').textContent = `spacing.semantic.${k} → ${raw} → ${v}`;
+}, 'md');
+function boxSizeFor(radiusPx) { return Math.min(240, Math.max(96, radiusPx * 3 + 40)); }
+const rdBox = document.getElementById('rd-box');
+pills('rd-pills', T.radius.semantic, k => {
+  const raw = T.radius.semantic[k].$value, v = resolve(raw), px = parseFloat(v);
+  if (k === 'full') { rdBox.style.width = '160px'; rdBox.style.height = '56px'; }
+  else { const s = boxSizeFor(px) + 'px'; rdBox.style.width = s; rdBox.style.height = s; }
+  rdBox.style.borderRadius = v; document.getElementById('rd-read').textContent = `radius.semantic.${k} → ${raw} → ${v}`;
+}, 'md');
+
+/* ---- Elevation / Border / Focus ring (.vlist) ---- */
+function vrow(host, name, valText, styleFn) {
+  const r = el('div', { class: 'vlist-row' }), d = el('div', { class: 'vlist-demo' });
+  styleFn(d); r.appendChild(d);
+  r.appendChild(el('div', { class: 'vlist-text' }, `<div class="vlist-name">${name}</div><div class="vlist-val">${valText}</div>`));
+  host.appendChild(r);
+}
+const elList = document.getElementById('el-list');
+for (const k in T.elevation.semantic) {
+  const raw = T.elevation.semantic[k].$value, v = resolve(raw);
+  const css = `${v.offsetX} ${v.offsetY} ${v.blur} ${v.spread} ${v.color}`;
+  vrow(elList, 'elevation.semantic.' + k, `${raw} → ${css}`, d => { d.style.boxShadow = css; d.style.border = '1px solid #eef0f3'; });
+}
+const bwList = document.getElementById('bw-list');
+for (const k in T.border.semantic) {
+  const raw = T.border.semantic[k].$value, v = resolve(raw);
+  vrow(bwList, 'border.semantic.' + k, `${raw} → ${v}`, d => { d.style.border = `${v} solid ${resolve('{color.semantic.border.base-primary}')}`; });
+}
+const frList = document.getElementById('fr-list');
+for (const k in T.color.semantic.focus_ring) {
+  const raw = T.color.semantic.focus_ring[k].$value, v = resolve(raw);
+  vrow(frList, 'color.semantic.focus_ring.' + k, `${raw} → ${v}`, d => { d.style.border = '1px solid #d5d9df'; d.style.outline = `3px solid ${v}`; d.style.outlineOffset = '2px'; });
+}
+
+/* ---- Sidebar scroll-spy ---- */
+(function initSidebar() {
+  const links = [...document.querySelectorAll('#sidebar a')];
+  const heads = links.map(a => document.getElementById(a.getAttribute('href').slice(1)));
+  const visible = new Set(); let suppress = false, timer = null;
+  const setActive = a => links.forEach(l => l.classList.toggle('active', l === a));
+  const pickTop = () => { if (suppress) return; const idx = heads.map((h, i) => visible.has(h) ? i : -1).filter(i => i >= 0); if (idx.length) setActive(links[Math.min(...idx)]); };
+  const io = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)); pickTop(); },
+    { rootMargin: `-${(document.querySelector('header').offsetHeight + 10)}px 0px -60% 0px` });
+  heads.forEach(h => io.observe(h));
+  const release = () => { suppress = false; clearTimeout(timer); };
+  links.forEach((a, i) => a.addEventListener('click', e => {
+    e.preventDefault(); setActive(a); suppress = true; clearTimeout(timer); timer = setTimeout(release, 600);
+    heads[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+  window.addEventListener('scrollend', release);
+  window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) setActive(links[links.length - 1]);
+    else if (window.scrollY <= 2) setActive(links[0]);
+  }, { passive: true });
+  setActive(links[0]);
+})();
+</script>
+</body>
+</html>
