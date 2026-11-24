@@ -2,6 +2,8 @@
 
 Load this file in full before writing JSON for any of these five branches. Each is its own top-level (or, for `focus_ring`, nested-under-`color.semantic`) branch — they're only grouped in this file for documentation convenience, per explicit user request.
 
+**Units (fixed — Mobile App only):** every dimension `$value` in this file is written in DTCG `px` and is read **1:1 as `pt` on iOS and `dp` on Android** (`8px` = `8pt` = `8dp`). There is no Webview variant and no `rem` value anywhere — don't convert, don't offer an alternative unit.
+
 ---
 ## 1. Spacing — `spacing.global` / `spacing.semantic`
 
@@ -63,13 +65,13 @@ Each `$value` aliases `radius.global.*` — never a literal. **`none` is the sma
 
 **Tier 2 — `elevation.semantic`:** exactly 4 keys, **renamed from the old numeric `0/1/2/3` scheme** — `none`, `sm`, `md`, `lg` — each aliasing the matching `elevation.global.shadow-*` primitive 1:1. Do not add intermediate steps; do not revert to numeric keys.
 
-**JSON location:** `elevation` stays its own top-level branch, sibling to `color`/`spacing`/`radius` — never folds into `color.semantic.[theme].shadow` (see `color.md`'s scoping note).
+**JSON location:** `elevation` stays its own top-level branch, sibling to `color`/`spacing`/`radius` — never folds into `color.semantic.shadow` (see `color.md`'s scoping note).
 
-## 5. Focus ring — `color.semantic.[theme].focus_ring`
+## 5. Focus ring — `color.semantic.focus_ring`
 
-Documented here per the user's grouping preference, but it is **not** its own top-level branch — in the actual JSON it nests under `color.semantic.[theme].focus_ring`, exactly like `background`/`content`/`border`/`overlay` (see `color.md` Tier 2).
+Documented here per the user's grouping preference, but it is **not** its own top-level branch — in the actual JSON it nests under `color.semantic.focus_ring`, exactly like `background`/`content`/`border`/`overlay` (see `color.md` Tier 2).
 
-**Role list (closed set):** `brand-primary`, `brand-secondary`, `error-primary`, `error-secondary` — 4 tokens, no `emphasis`/`state` suffixing beyond what's already baked into the role name.
+**Role list (closed set):** `brand-primary`, `brand-secondary`, `error-primary`, `error-secondary` — 4 tokens, no extra `emphasis` suffixing beyond what's already baked into the role name.
 
 **Value-mapping:** `brand-*` roles alias the `primary` palette family, `error-*` roles alias the `error` palette family. Both stay inside the same **`400`–`700` band** `color.md` locks for `content`:
 * **`brand-primary` = step `600`, `brand-secondary` = step `700`** — fixed, matching `color.md`'s fixed-step exception for `content.brand-*` so a focus ring and its brand text agree. Don't run a contrast search on these two.
@@ -84,9 +86,9 @@ Each `$value` aliases `color.global.*` — never a literal, never cross-referenc
   "radius":       { "global": {}, "semantic": {} },
   "border":       { "global": {}, "semantic": {} },
   "elevation":    { "global": {}, "semantic": { "none": {}, "sm": {}, "md": {}, "lg": {} } },
-  "color": { "semantic": { "light": { "focus_ring": {
+  "color": { "semantic": { "focus_ring": {
     "brand-primary": {}, "brand-secondary": {}, "error-primary": {}, "error-secondary": {}
-  } } } }
+  } } }
 }
 ```
 
@@ -98,5 +100,5 @@ Each `$value` aliases `color.global.*` — never a literal, never cross-referenc
 * Every `spacing.semantic.*` / `radius.semantic.*` / `border.semantic.*` `$value` aliases the matching `*.global.*` primitive — zero literals at Tier 2.
 * `border.semantic.md` is still `1px`, and `border.global` keeps its hairline step as the literal `border-0.5`, not a word like `half`.
 * `elevation.semantic` uses exactly `none`/`sm`/`md`/`lg` — no numeric keys, no extra steps.
-* `color.semantic.[theme].focus_ring` has exactly the 4 roles listed, each aliasing `color.global.*` inside the `400`–`700` band, with `brand-primary`=`600` and `brand-secondary`=`700`.
+* `color.semantic.focus_ring` (no theme key above it) has exactly the 4 roles listed, each aliasing `color.global.*` inside the `400`–`700` band, with `brand-primary`=`600` and `brand-secondary`=`700`.
 * Nothing in this file's five branches contains a literal (non-alias) value at the semantic tier — except `border.global.border-0.5`'s own key name, which is the one documented literal-in-key exception.

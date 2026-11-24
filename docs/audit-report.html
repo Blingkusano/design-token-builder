@@ -25,37 +25,38 @@
 </head>
 <body>
 <h1>Skill Audit Report: design-token-builder</h1>
-<p class="meta">design-token-builder/SKILL.md (1.1.1) · 247/500 lines · 22,596/25,000 chars · 2026-08-25</p>
+<p class="meta">design-token-builder-3.1.1.zip → SKILL.md · 237/500 lines · 24,100/25,000 chars · 2026-11-24</p>
 <div class="verdict ready">12/12 — Production-ready</div>
 <table>
-  <tr><th>#</th><th>เกณฑ์</th><th>ผล</th><th>เหตุผล (หลักฐาน)</th></tr>
-  <tr class="pass"><td>1</td><td>Anthropic baseline (frontmatter)</td><td>✅</td><td>Frontmatter ถูกต้อง <code>name</code> เป็น kebab-case และ <code>description</code> ระบุทั้ง what และ when พร้อมตัวอย่างประโยคที่ผู้ใช้อาจพูดโดยไม่เอ่ยคำว่า design token</td></tr>
-  <tr class="pass"><td>2</td><td>Body completeness (role/author/version)</td><td>✅</td><td>ครบทั้งสามใน <code>## About</code> — Version 1.1.1, ผู้เขียนระบุชื่อจริง, Role ระบุเป็น Design System Designer ที่สร้าง W3C DTCG token</td></tr>
-  <tr class="pass"><td>3</td><td>Example results</td><td>✅</td><td><code>## Example Output</code> ใช้ token <code>spacing.semantic.md</code> ตัวเดียวไล่ครบทั้งสาม output type — JSON เป็นโค้ดจริง, HTML preview, และ Figma variable path</td></tr>
-  <tr class="pass"><td>4</td><td>Consistent output format</td><td>✅</td><td>Phase 1 ข้อ 4 ล็อกชุด deliverable และลำดับไว้ชัด ส่วน schema delegate ไป reference file ตามหลัก progressive disclosure และตัวอย่างในไฟล์สอดคล้องกับที่ล็อกไว้</td></tr>
-  <tr class="pass"><td>5</td><td>Do &amp; Don't</td><td>✅</td><td>มีหัวข้อ <code>## Do</code> และ <code>## Don't</code> แยกชัดเจน รวมกฎ MUST/NEVER ที่เคยกระจายอยู่หกจุดไว้ที่เดียว และแต่ละข้อชี้กลับไปยัง phase ที่เป็นเจ้าของกฎ</td></tr>
-  <tr class="pass"><td>6</td><td>Input specification</td><td>✅</td><td>Phase 2 ระบุ input ครบ 9 ข้อ พร้อมพฤติกรรมเมื่อขาด — ทั้ง <code>Required</code>, ตัวเลือกสำรอง, และกฎครอบว่าห้ามเริ่ม generate จนกว่าจะได้ครบ</td></tr>
-  <tr class="pass"><td>7</td><td>Clear use cases</td><td>✅</td><td>มี use case รูปธรรม 5 ข้อ แยกกันชัด ไม่กว้างจนทับทุกงาน</td></tr>
-  <tr class="pass"><td>8</td><td>Clear workflow</td><td>✅</td><td>ไหลครบตั้งแต่สัมภาษณ์ → generate → ส่งมอบ 2 ไฟล์ → คำถามต่อ Figma → Phase 7–8 พร้อม USER CHECKPOINT คั่นสองจุด</td></tr>
-  <tr class="pass"><td>9</td><td>Instruction &amp; Action Sequences</td><td>✅</td><td>ทุก phase และ step มีเลขกำกับ เรียงลำดับชัด และเขียนเป็นคำสั่งที่ลงมือได้ทันที (<code>Read</code>, <code>Generate</code>, <code>Map</code>, <code>Ask</code>) ไม่ใช่คำบรรยาย</td></tr>
-  <tr class="pass"><td>10</td><td>English-first content (Thai exception)</td><td>✅</td><td>ข้อความสั่งงานเป็นอังกฤษทั้งหมด ภาษาไทยปรากฏเฉพาะใน string ที่เป็นตัวเลือกให้ผู้ใช้เห็น (<code>"ไม่มี / None"</code>) ซึ่งเกณฑ์อนุญาต</td></tr>
-  <tr class="pass"><td>11</td><td>Optimized content</td><td>✅</td><td>มีกฎ conciseness ครบ ไม่มี filler และการ restate ที่ drift ถูกแก้แล้ว — Phase 7 ชี้ไปหาไฟล์เจ้าของกฎแทนการสรุปเอง ส่วน Appendix C แยกเป็น Part 1 / Part 2 การรันแบบ token อย่างเดียวจึงไม่เหลือช่องว่างค้าง</td></tr>
-  <tr class="pass"><td>12</td><td>≤ 500 บรรทัด และ ≤ 25,000 อักขระ</td><td>✅</td><td>247 บรรทัด และ 22,596 อักขระ อยู่ใต้เพดานทั้งสองค่า</td></tr>
+  <tr><th>#</th><th>Criterion</th><th>Result</th><th>Reason (evidence)</th></tr>
+  <tr class="pass"><td>1</td><td>Anthropic baseline (frontmatter)</td><td>✅</td><td><code>name</code> เป็น kebab-case และ <code>description</code> บอกครบทั้งว่า skill ทำอะไร และควรใช้เมื่อไร</td></tr>
+  <tr class="pass"><td>2</td><td>Body completeness (role/author/version)</td><td>✅</td><td>ระบุ version 3.1.1, ผู้เขียน และบทบาทครบ (บรรทัด 7–9 และ 12)</td></tr>
+  <tr class="pass"><td>3</td><td>ตัวอย่างผลลัพธ์</td><td>✅</td><td>มีตัวอย่างครบทุกประเภทผลลัพธ์ (บรรทัด 27–62): token (spacing และสี), HTML preview, Figma variables, แบบฟอร์มรอบ 1, สีที่เสนอในรอบ 2, การ์ดรอบ 3, รายงาน Part 2 และ hand-off notes</td></tr>
+  <tr class="pass"><td>4</td><td>รูปแบบผลลัพธ์สม่ำเสมอ</td><td>✅</td><td>JSON และ preview มีโครงที่ล็อกไว้ใน reference และตอนนี้ hand-off notes มีตารางรูปแบบเดียว (บรรทัด 97) ซึ่งตัวอย่างในบรรทัด 58–62 ก็ใช้รูปแบบนี้ ส่วน checkpoint สุดท้ายกำหนดเนื้อหาไว้ 5 อย่าง (บรรทัด 233)</td></tr>
+  <tr class="pass"><td>5</td><td>Do &amp; Don't</td><td>✅</td><td>มีรายการ Do (บรรทัด 64–73) และ Don't (บรรทัด 75–83) ชัดเจน</td></tr>
+  <tr class="pass"><td>6</td><td>ระบุ input</td><td>✅</td><td>ระบุช่องข้อมูลครบ 7 ข้อ และบอกวิธีรับมือเมื่อข้อมูลขาดหรือผิด เช่น base font size ที่ไม่ใช่ 14, 16 หรือ 18 ให้ถามอีกครั้ง</td></tr>
+  <tr class="pass"><td>7</td><td>Use cases ชัดเจน</td><td>✅</td><td>มี use case ที่เป็นรูปธรรม 4 ข้อ (บรรทัด 21–25)</td></tr>
+  <tr class="pass"><td>8</td><td>Workflow ชัดเจน</td><td>✅</td><td>มีลำดับครบตั้งแต่ถามข้อมูล (Phase 1 ข้อ 1, Phase 2) สร้างไฟล์ ส่งไฟล์พร้อม hand-off notes ไปจนถึงงาน Figma และปิดงาน</td></tr>
+  <tr class="pass"><td>9</td><td>Instruction &amp; Action Sequences</td><td>✅</td><td>ขั้นตอนมีลำดับเลขกำกับ และเขียนเป็นคำสั่งที่ทำตามได้ เช่น ปิดงานต้องส่ง 5 อย่างที่ระบุชื่อไว้ ส่วนการกำหนดช่องข้อมูลอยู่ก่อนลิงก์ไปที่รอบต่างๆ แล้ว</td></tr>
+  <tr class="pass"><td>10</td><td>เนื้อหาภาษาอังกฤษเป็นหลัก (ข้อยกเว้นภาษาไทย)</td><td>✅</td><td>คำสั่งเป็นภาษาอังกฤษ ภาษาไทยที่พบเป็นป้ายที่ผู้ใช้เห็นในผลลัพธ์ เช่น <code>แนะนำให้</code>, <code>ไม่มี</code> และ <code>ผ่าน 4.5:1</code> ซึ่งเกณฑ์อนุญาต</td></tr>
+  <tr class="pass"><td>11</td><td>เนื้อหากระชับ</td><td>✅</td><td>ตัดกฎที่ซ้ำ 3 จุดและคำเก่าออกแล้ว ย่อคำอธิบายเหตุผลแล้ว และมีกฎให้ตอบกระชับในบรรทัด 71</td></tr>
+  <tr class="pass"><td>12</td><td>≤ 500 บรรทัด และ ≤ 25,000 ตัวอักษร</td><td>✅</td><td>237 บรรทัด และ 24,100 ตัวอักษร ผ่านทั้งสองเกณฑ์ (เหลือที่ว่างประมาณ 900 ตัวอักษร)</td></tr>
 </table>
-<h2>Top fixes (priority order)</h2>
+<h2>สิ่งที่ควรแก้ (เรียงตามลำดับความสำคัญ)</h2>
 <ol class="fixes">
-  <li><strong>ตัดสินใจเรื่องความไม่สมมาตรของ <code>-solid</code></strong> — ตอนนี้ <code>brand_secondary-solid</code> ถูก pin ที่ step <code>500</code> แต่ <code>brand-solid</code> ยังใช้การค้นหาตาม contrast ทั้งที่มักลงเอยที่ <code>500</code> เหมือนกัน ควร pin ทั้งคู่ให้เหมือนกัน หรือเขียนกำกับใน <code>reference/color.md</code> ว่าทำไมสอง role นี้ใช้กฎต่างกัน ไม่งั้นคนอ่านรอบหน้าจะสับสน</li>
-  <li><strong>เขียนกำกับข้อจำกัดของ band <code>400</code>–<code>700</code> เมื่อเจอ secondary โทนกลาง</strong> — เมื่อ <code>secondary-500</code> เป็นสีอย่างส้มหรือเหลือง จะไม่มี token ใดใน band นี้ผ่าน AA บนพื้นนั้นเลย (ทั้ง <code>content.white</code> และ <code>content.base-primary</code> ตก) กฎ fallback ไป <code>background.brand-solid</code> เขียนไว้แล้ว แต่ควรใส่ตัวเลขตัวอย่างกำกับให้เห็นว่าเมื่อไหร่จะเจอ</li>
-  <li><strong>อัปเดต <code>docs/instruction.html</code></strong> — ยังอธิบายพฤติกรรมของ 1.0.0 อยู่ ทั้งลำดับ deliverable และชื่อ weight แบบเดิม ต่างจากที่ skill ทำจริงใน 1.1.1</li>
+  <li><strong>อัปโหลด zip ทั้งชุด:</strong> เพื่อให้ไฟล์ใน <code>reference/</code> ที่ SKILL.md อ้างถึงมีครบและเป็นฉบับล่าสุด</li>
+  <li><strong>ระวังเรื่องขนาด:</strong> เหลือที่ว่างแค่ประมาณ 900 ตัวอักษร ถ้าเพิ่มกฎครั้งหน้า ให้เขียนไว้ใน <code>reference/</code> แทน SKILL.md</li>
+  <li><strong>เวอร์ชันถัดไป:</strong> ใส่ตัววัดสีที่ใกล้กับที่ตาเห็น (OKLCH + ΔE2000 + OKHSL) ใน <code>intake-rounds.md</code> ตามผลค้นข้อมูลที่คุยกันไว้</li>
 </ol>
-<h2>Reference &amp; Linkage Check (supplementary, not scored)</h2>
+<h2>ตรวจการอ้างอิงไฟล์อื่น (เสริม ไม่นับคะแนน)</h2>
 <ul class="ref-check">
-  <li><strong>reference/color.md</strong>: ✅ ไม่ขัดแย้ง — Optional-palette rule ใน SKILL.md ตรงกับตาราง conditional-roles ในไฟล์นั้นทุกจำนวน และรายชื่อ element ตรงกับ closed set ที่ไฟล์นั้นประกาศ</li>
-  <li><strong>reference/typography.md</strong>: ✅ ไม่ขัดแย้ง — SKILL.md ชี้ไปหา multiplier table โดยไม่ restate ค่าใดซ้ำ</li>
-  <li><strong>reference/spacing-radius-elevation-borderwidth-focusring.md</strong>: ✅ ไม่ขัดแย้ง — อ้างถึงในตาราง Phase 4 อย่างเดียว ไม่มีการ restate สเกล</li>
-  <li><strong>reference/html-preview-structure.md</strong>: ✅ ไม่ขัดแย้ง — อ้างถึงเชิงโครงสร้าง ไม่ทับกฎภายในไฟล์</li>
-  <li><strong>reference/figma-variable-structure.md</strong>: ✅ ไม่ขัดแย้งแล้ว — ข้อขัดแย้งเรื่องขอบเขต 400–600 clamp ที่พบในรอบก่อนถูกแก้ใน 1.1.1 โดย SKILL.md เลิกสรุปกฎเองและชี้ไปหาตารางในไฟล์นั้นเป็นเจ้าของกฎเดียว</li>
-  <li><strong>reference/figma-page-structure.md</strong>: ✅ ไม่ขัดแย้ง — page skeleton ที่ copy มาไว้ใน SKILL.md ตรงกับไฟล์ต้นทางทุกบรรทัด รวมทั้ง prefix <code>  --&gt; </code></li>
+  <li><strong>reference/intake-rounds.md</strong>: ✅ ไม่ขัดกับ SKILL.md เป็นเนื้อหารอบ 1–3 เดิมที่ย้ายมาแบบไม่แก้คำ หมายเหตุ: คำที่ยังวัดผลไม่ได้ ("smallest visible change" และ "match saturation and lightness") ยังอยู่ในไฟล์นี้ตามที่ตัดสินใจเลื่อนไปทำรอบหน้า</li>
+  <li><strong>reference/verification-checklist.md</strong>: ✅ ข้อตรวจตรงกับ Appendix C เดิมทุกข้อ (เทียบแล้ว)</li>
+  <li><strong>reference/typography.md</strong>: ✅ แก้ปัญหาที่ขัดกันแล้ว ใช้ตารางตัวคูณทุกครั้ง และกฎปัดเลขคู่อยู่ในไฟล์นี้</li>
+  <li><strong>reference/color.md</strong>: ✅ ช่วง 400–700 ของ <code>background.*-solid</code> และการบันทึก hand-off notes สอดคล้องกับรูปแบบใหม่</li>
+  <li><strong>reference/figma-variable-structure.md</strong>: ✅ Color ใช้ขั้นเดียวกับ JSON และตาราง scope ที่ย้ายมาไม่ซ้ำกับ SKILL.md แล้ว</li>
+  <li><strong>reference/figma-page-structure.md</strong>: ✅ หน้า Cover ผูกกับสี Primary ต้นฉบับ ตรงกับข้อมูลที่ส่งไปตอนเริ่มงาน Figma</li>
+  <li><strong>reference/spacing-radius-elevation-borderwidth-focusring.md และ reference/html-preview-structure.md</strong>: ✅ SKILL.md แค่ชี้ไปที่ไฟล์เหล่านี้ ไม่ได้เขียนกฎซ้ำ</li>
 </ul>
 </body>
 </html>

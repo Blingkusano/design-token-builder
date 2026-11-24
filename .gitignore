@@ -4,3 +4,7 @@ Thumbs.db
 node_modules/
 .vscode/
 .idea/
+/release/
+.claude/settings.local.json
+__pycache__/
+*.pyc

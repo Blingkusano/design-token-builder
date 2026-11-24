@@ -112,11 +112,12 @@
 <p class="lede">Skill สำหรับสร้างชุด Design Token ตามมาตรฐาน W3C DTCG พร้อม HTML preview และสร้าง Variables ลง Figma ให้อัตโนมัติ</p>
 
 <table class="meta-table">
-  <tr><td>เวอร์ชัน</td><td><span class="path">1.0.0</span> — ใช้เวอร์ชันล่าสุดที่อยู่บน repo เสมอ</td></tr>
+  <tr><td>เวอร์ชัน</td><td><span class="path">3.1.1</span> — ใช้เวอร์ชันล่าสุดที่อยู่บน repo เสมอ</td></tr>
   <tr><td>ผลลัพธ์</td><td>ไฟล์ Token JSON, ไฟล์ HTML preview และ (ถ้าเลือก) Figma Variables + หน้า Foundation</td></tr>
   <tr><td>ต้องมี</td><td>บัญชี Claude แผน Pro ขึ้นไป, Figma connector และไฟล์ Figma ที่แก้ไขได้</td></tr>
-  <tr><td>เวลาที่ใช้</td><td>ประมาณ 15–30 นาที ขึ้นกับจำนวน theme และ brand</td></tr>
-  <tr><td>ตัวอย่างผลลัพธ์</td><td><a href="token-preview-sample.html">เปิดดูตัวอย่าง HTML preview</a> — สร้างจากค่าสมมติ ไม่ใช่โปรเจกต์จริง</td></tr>
+  <tr><td>เวลาที่ใช้</td><td>ประมาณ 15–30 นาที</td></tr>
+  <tr><td>ขอบเขต</td><td>1 brand, 1 colour mode, Mobile App (iOS / Android) หยุดที่ Tier 2 &mdash; ไม่มี Dark mode, custom theme, Webview และ component token</td></tr>
+  <tr><td>ตัวอย่างผลลัพธ์</td><td><a href="token-preview-sample.html">เปิดดูตัวอย่าง HTML preview</a> — จากรอบทดสอบ 3.1.0 ไม่ใช่โปรเจกต์จริง</td></tr>
 </table>
 
 <div class="group">
@@ -190,18 +191,17 @@
   <li class="step">
     <span class="step-key">1.5</span>
     <h3>เตรียมค่าสีและฟอนต์ของแบรนด์</h3>
-    <p>Claude จะถามค่าพวกนี้ทีละข้อในขั้นตอนที่ 2.2 และจะไม่เริ่มสร้าง token จนกว่าจะได้ครบ เตรียมไว้ก่อนจะได้ไม่ต้องหยุดไปเปิดไฟล์ brand กลางบทสนทนา</p>
+    <p>Claude จะถามค่าพวกนี้ในแบบฟอร์มเดียวในขั้นตอนที่ 2.2 และจะไม่เริ่มสร้าง token จนกว่าจะได้ครบ เตรียมไว้ก่อนจะได้ไม่ต้องหยุดไปเปิดไฟล์ brand กลางบทสนทนา</p>
     <table class="nv">
       <tr><th>รายการ</th><th>ต้องเตรียม</th></tr>
       <tr><td>ชื่อโปรเจกต์</td><td>ใช้ขึ้นหน้า Cover ใน Figma</td></tr>
       <tr><td>Primary</td><td>ค่า hex สีหลักของแบรนด์ &mdash; <strong>จำเป็น ไม่มีค่าเริ่มต้นให้</strong></td></tr>
-      <tr><td>Secondary</td><td>ค่า hex &mdash; ถ้าไม่มี Claude จะเสนอ 3 ตัวเลือกให้</td></tr>
-      <tr><td>Neutral</td><td>ค่า hex &mdash; ถ้าไม่มี Claude จะเสนอ 3 ตัวเลือกให้</td></tr>
-      <tr><td>Accent</td><td>ค่า hex &mdash; ถ้าไม่มี Claude จะเสนอ 3 ชุดพาเลตต์ให้เลือก</td></tr>
-      <tr><td>Status 4 สี</td><td>hex ของ Success / Warning / Error / Info</td></tr>
+      <tr><td>Secondary</td><td>ค่า hex, ให้ Claude เสนอ 3 ตัวเลือก หรือตอบ <em>ไม่มี / None</em> เพื่อไม่สร้างสีชุดนี้</td></tr>
+      <tr><td>Neutral</td><td>ค่า hex &mdash; <strong>จำเป็น</strong> หรือตอบ <em>แนะนำให้</em> เพื่อให้ Claude เสนอ 3 ตัวเลือก</td></tr>
+      <tr><td>Accent</td><td>ค่า hex, ให้ Claude เสนอ 3 ชุดพาเลตต์ หรือตอบ <em>ไม่มี / None</em> เพื่อไม่สร้างสีชุดนี้</td></tr>
+      <tr><td>Status 4 สี</td><td>hex ของ Success / Warning / Error / Info &mdash; <strong>จำเป็น</strong> หรือตอบ <em>แนะนำให้</em> เพื่อให้ Claude เสนอ 3 ชุด</td></tr>
       <tr><td>ฟอนต์</td><td>ชื่อ font family ที่แบรนด์ใช้ (ค่าเริ่มต้นคือ Noto Sans Thai)</td></tr>
-      <tr><td>ขนาดฐาน</td><td>ขนาดตัวอักษรพื้นฐาน (ค่าเริ่มต้นคือ 16px)</td></tr>
-      <tr><td>Theme</td><td>ต้องการ Light/Dark ไหม และมี custom theme เพิ่มไหม</td></tr>
+      <tr><td>ขนาดฐาน</td><td>เลือก 14, 16 หรือ 18 (ค่าเริ่มต้นคือ 16) ขนาดอื่นทั้งหมดคำนวณจากค่านี้และปัดเป็นเลขคู่</td></tr>
     </table>
   </li>
 
@@ -224,21 +224,25 @@
   <li class="step">
     <span class="step-key">2.2</span>
     <h3>ตอบชุดคำถามจาก Claude</h3>
-    <p>Claude จะถามทีละข้อเพื่อเก็บเป็น requirement ตอบให้ครบทุกข้อ ระบบจะไม่เริ่มสร้าง token จนกว่าจะได้ข้อมูลครบ</p>
+    <p>Claude จะส่งแบบฟอร์มที่มีคำถามครบ 7 ข้อพร้อมค่าเริ่มต้นมาในครั้งเดียว กรอกแล้วส่งกลับในข้อความเดียว จากนั้นอาจมีอีกไม่เกิน 2 รอบ เฉพาะเมื่อจำเป็น</p>
     <table class="nv">
       <tr><th>ลำดับ</th><th>คำถาม</th></tr>
       <tr><td>1</td><td>ชื่อโปรเจกต์ (ใช้ขึ้นหน้า Cover ใน Figma)</td></tr>
       <tr><td>2–6</td><td>ค่าสี: Primary, Secondary, Neutral, Accent และ Status ทั้ง 4 (Success / Warning / Error / Info)</td></tr>
-      <tr><td>7</td><td>ต้องการ Light/Dark mode ไหม และมี custom theme เพิ่มไหม</td></tr>
-      <tr><td>8</td><td>ฟอนต์และขนาดฐาน</td></tr>
-      <tr><td>9</td><td>แพลตฟอร์มปลายทาง: Mobile App หรือ Webview หรือทั้งคู่</td></tr>
+      <tr><td>7</td><td>ฟอนต์และขนาดฐาน (14 / 16 / 18)</td></tr>
+    </table>
+    <table class="nv" style="margin-top:12px">
+      <tr><th>รอบ</th><th>เกิดขึ้นเมื่อ</th></tr>
+      <tr><td>รอบ 1 แบบฟอร์ม</td><td>ทุกครั้ง</td></tr>
+      <tr><td>รอบ 2 เลือกสีที่แนะนำ</td><td>เฉพาะเมื่อตอบ <em>แนะนำให้</em> ในช่องใดช่องหนึ่ง Claude จะแสดงเป็นกล่องสีพร้อม hex ให้เลือก</td></tr>
+      <tr><td>รอบ 3 ตรวจ contrast</td><td>เฉพาะเมื่อมีสีที่ไม่ผ่าน WCAG AA Claude จะเสนอสีที่ผ่าน 4.5:1, สีที่ผ่าน 3:1 หรือใช้สีเดิม และให้คุณเลือกเอง</td></tr>
     </table>
   </li>
 
   <li class="step">
     <span class="step-key">2.3</span>
     <h3>ตรวจสอบ HTML preview</h3>
-    <p>Claude จะส่ง Token JSON พร้อมไฟล์ HTML preview มาให้ เปิดไฟล์ preview แล้วไล่ดูให้ครบทุกหมวด &mdash; Color, Typography, Spacing, Radius, Elevation, Border และ Focus ring</p>
+    <p>Claude จะส่งไฟล์ HTML preview พร้อมไฟล์ Token JSON และตาราง hand-off notes (คู่สีที่ต้องระวัง) มาให้ เปิดไฟล์ preview แล้วไล่ดูให้ครบทุกหมวด &mdash; Color, Typography, Spacing, Radius, Elevation, Border และ Focus ring</p>
     <p><strong>ถ้าต้องการแก้:</strong> พิมพ์สั่งแก้ได้เลยในแชทเดิม เช่น</p>
     <div class="prompt"><span class="cue">&rsaquo;</span> ปรับ radius md เป็น 12px แล้วออก preview ใหม่</div>
     <div class="note" style="margin-top:16px">
@@ -251,22 +255,22 @@
     <span class="step-key">2.4</span>
     <h3>ตอบ Y/N เพื่อสร้างลง Figma</h3>
     <p>เมื่อตรวจ preview เรียบร้อยแล้ว <strong>ไม่ต้องพิมพ์คำสั่งอะไรเพิ่ม</strong> Claude จะถามเองเป็นคำถาม Y/N ให้ตอบตามที่ต้องการ</p>
-    <p>คำถามมี <strong>สองข้อ แยกกันคนละเรื่อง</strong> ตอบ Y ข้อแรกไม่ได้แปลว่าข้อสองจะถูกข้ามไป จะโดนถามทั้งสองข้อเสมอ</p>
+    <p>คำถามมี <strong>สองส่วน ถามพร้อมกันในครั้งเดียว</strong> เพราะงานฝั่ง Figma ทำรวดเดียวจบ ต้องรู้ขอบเขตก่อนเริ่ม</p>
     <table class="nv">
       <tr><th>คำถาม</th><th>ตอบ Y แล้วได้อะไร</th></tr>
       <tr>
         <td><em>&ldquo;Create variables to Figma? (Y/N)&rdquo;</em></td>
-        <td>สร้างโครงหน้าและ Variables ทั้ง 3 collection ลงไฟล์ Figma แล้วหยุดให้ตรวจ &mdash; ยังไม่ทำ QA รอบสุดท้าย</td>
+        <td>สร้าง Variables ทั้ง 3 collection พร้อมหน้า Cover และ Foundation ลงไฟล์ Figma (Phase 7) แล้วหยุดให้ตรวจ &mdash; ยังไม่ทำ QA รอบสุดท้าย</td>
       </tr>
       <tr>
-        <td><em>&ldquo;Would you like to create a design style guideline file directly on Figma?&rdquo;</em></td>
-        <td>ทำต่อจนครบ ทั้งหน้า Foundation ทุกหน้าและ QA รอบสุดท้าย (ตรวจชื่อซ้ำ ตรวจว่าไม่มีค่า hardcode ตรวจสลับ Light/Dark)</td>
+        <td><em>&ldquo;Also build the full style guideline file (Cover + Foundation pages + final QA)? (Y/N)&rdquo;</em></td>
+        <td>ทำต่อจนจบ QA รอบสุดท้าย (ตรวจชื่อซ้ำ ตรวจว่าไม่มีค่า hardcode) โดยไม่หยุดถามซ้ำกลางทาง</td>
       </tr>
     </table>
     <div class="note">
-      <strong>อยากได้ครบทั้งชุด</strong> ให้ตอบ <span class="path">Y</span> ทั้งสองข้อ &mdash; ถ้าตอบ <span class="path">N</span> ข้อแรกแต่ตอบ <span class="path">Y</span> ข้อสอง ก็ยังได้ผลครบเหมือนกัน เพราะข้อสองครอบคลุมงานของข้อแรกอยู่แล้ว
+      <strong>อยากได้ครบทั้งชุด</strong> ให้ตอบ <span class="path">Y</span> ทั้งสองส่วน &mdash; ตอบ <span class="path">N</span> ทั้งคู่ถือว่าจบงานที่ไฟล์ JSON กับ preview
     </div>
-    <p style="margin-top:14px">ระหว่างทาง Claude จะขอ URL ของไฟล์ Figma ที่เตรียมไว้จากข้อ 1.3 และจะหยุดให้ยืนยันอีกครั้งก่อนปิดงาน</p>
+    <p style="margin-top:14px">จากนั้น Claude จะขอ URL ของไฟล์ Figma ที่เตรียมไว้จากข้อ 1.3 แล้วสรุปผลพร้อม preview หน้า Cover และ Color ให้ตรวจเมื่อทำเสร็จ</p>
   </li>
 
 </ol>
